@@ -16,7 +16,7 @@ class FilterOption extends StatelessWidget {
         onTap: onPressed,
         child: Container(
           margin: EdgeInsets.only(right: 10),
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 1),
           decoration: BoxDecoration(
               color:
                   isSelected ? colorsPalete['dark brown'] : Colors.transparent,
@@ -29,7 +29,7 @@ class FilterOption extends StatelessWidget {
           child: Text(title,
           style: GoogleFonts.nunito(
             fontWeight: FontWeight.w700,
-            fontSize: 16,
+            fontSize: 15,
             color: colorsPalete['white']
           ))
         ));

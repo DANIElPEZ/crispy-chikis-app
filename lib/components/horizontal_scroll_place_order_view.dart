@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:chispy_chikis/components/card_home_view.dart';
+import 'package:chispy_chikis/components/card_place_order_view.dart';
 import 'package:chispy_chikis/color/colors.dart';
 
-class HorizontalScrollHome extends StatelessWidget {
-  HorizontalScrollHome({required this.title, required this.elements});
+class HorizontalScrollPlaceOrder extends StatelessWidget {
+  HorizontalScrollPlaceOrder({required this.title, required this.elements});
 
   final String title;
   final List elements;
@@ -28,11 +28,10 @@ class HorizontalScrollHome extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: elements.length,
               itemBuilder: (context, index) {
-                return CardHome(
+                return CardPlaceOrder(
                     image: elements[index][0],
                     title: elements[index][1],
-                    price: elements[index][2],
-                  description: elements[index][3]
+                    price: elements[index][2]
                 );
               }))
     ]);

@@ -38,21 +38,14 @@ class OrdersState extends State<Orders> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
       color: colorsPalete['dark blue'],
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(
             children: filters
-                .map((filter) =>
-                FilterOption(
+                .map((filter) => FilterOption(
                     title: filter[0],
                     onPressed: () {
                       setState(() => selectedFilter = filter[0]);
@@ -66,7 +59,8 @@ class OrdersState extends State<Orders> {
                 physics: BouncingScrollPhysics(),
                 itemCount: orders.length,
                 itemBuilder: (context, index) {
-                  return CardOrder(date: orders[index][0],
+                  return CardOrder(
+                      date: orders[index][0],
                       order: orders[index][1],
                       cancel: orders[index][2]);
                 }))

@@ -77,7 +77,7 @@ class Product extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       fontSize: 21,
                       color: colorsPalete['white'])),
-              SizedBox(height: 50),
+              SizedBox(height: 15),
               Text('Reseñas',
                   style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w700,

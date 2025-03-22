@@ -2,7 +2,7 @@ import 'package:chispy_chikis/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:chispy_chikis/color/colors.dart';
 import 'package:chispy_chikis/components/appbar.dart';
@@ -19,7 +19,9 @@ Future<void> main() async {
 }
 
 Future<void> loadSupabase()async{
-
+  await dotenv.load(fileName: '.env');
+  await Supabase.initialize(url: dotenv.env['API_URL']??'',
+      anonKey: dotenv.env['API_KEY']??'');
 }
 
 class MainView extends StatefulWidget {
@@ -28,7 +30,7 @@ class MainView extends StatefulWidget {
 }
 
 class MainViewState extends State<MainView> {
-  int indexView=0;
+  int indexView=1;
 
   @override
   Widget build(BuildContext context) {
