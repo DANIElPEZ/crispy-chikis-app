@@ -5,18 +5,21 @@ import 'package:chispy_chikis/views/product.dart';
 
 class CardHome extends StatelessWidget{
   CardHome({
+    required this.id,
     required this.image,
     required this.title,
     required this.description,
     required this.price
 });
-  String image,title, description, price;
+  int id;
+  String image,title, description;
+  double price;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context)=>Product(id: 1, image: image, title: title, description: description, price: price)));
+          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context)=>Product(id: 1, image: image, title: title, description: description, price: price.toString())));
         },
         child: Card(
           elevation: 10,
@@ -26,8 +29,8 @@ class CardHome extends StatelessWidget{
           ),
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-            width: 155,
-            height: 190,
+            width: 185,
+            height: 200,
             child: Column(
               children: [
                 Image.network(image, height: 90,

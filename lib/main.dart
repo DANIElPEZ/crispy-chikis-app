@@ -1,3 +1,4 @@
+import 'package:chispy_chikis/provider/provider.dart';
 import 'package:chispy_chikis/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,8 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   loadSupabase();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_){
-    //runApp(MultiProvider(providers: [], child: MainView()));
-    runApp(MainView());
+    runApp(MultiProvider(providers: [ChangeNotifierProvider(create: (_)=>crispyProvider())], child: MainView()));
   });
 }
 
@@ -31,6 +31,20 @@ class MainView extends StatefulWidget {
 
 class MainViewState extends State<MainView> {
   int indexView=1;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeData();
+  }
+
+  Future<void> initializeData()async{
+    final crispy_provider=Provider.of<crispyProvider>(context, listen: false);
+    await crispy_provider.checkConnection();
+    await Future.delayed(Duration(microseconds: 900));
+    await crispy_provider.fetchProducts();
+    await crispy_provider.loadUser();
+  }
 
   @override
   Widget build(BuildContext context) {

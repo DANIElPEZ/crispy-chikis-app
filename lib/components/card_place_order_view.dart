@@ -4,9 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 class CardPlaceOrder extends StatefulWidget {
   CardPlaceOrder(
-      {required this.image, required this.title, required this.price});
+      {required this.id, required this.image, required this.title, required this.price});
 
-  final String image, title, price;
+  int id;
+  final String image, title;
+  double price;
 
   @override
   State<CardPlaceOrder> createState() => _CardPlaceOrderState();
@@ -53,8 +55,8 @@ class _CardPlaceOrderState extends State<CardPlaceOrder>
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Container(
-                width: 155,
-                height: 190,
+                width: 185,
+                height: 200,
                 child: Stack(alignment: AlignmentDirectional.center, children: [
                   Container(
                       padding:

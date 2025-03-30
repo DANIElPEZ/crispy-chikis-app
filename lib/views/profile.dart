@@ -36,7 +36,7 @@ class ProfileState extends State<Profile> {
             Text('Bienvenido a Crispy Chikis',
                 style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
-                    fontSize: 25,
+                    fontSize: 22,
                     color: colorsPalete['white'])),
             Container(
                 margin: EdgeInsets.only(top: 30),
@@ -81,7 +81,7 @@ class ProfileState extends State<Profile> {
                 Text('Acepto tratamiento de datos personales.',
                     style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w600,
-                        fontSize: 13.5,
+                        fontSize: 13,
                         color: colorsPalete['white']))
               ]),
               CustomButton(text: 'GUARDAR PERFIL', onPressed: () {})

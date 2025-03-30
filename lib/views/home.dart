@@ -6,6 +6,8 @@ import 'package:chispy_chikis/components/text_field.dart';
 import 'package:chispy_chikis/components/main_button.dart';
 import 'package:chispy_chikis/views/make_order_view/place_order.dart';
 import 'package:chispy_chikis/components/horizontal_scroll_home_view.dart';
+import 'package:provider/provider.dart';
+import 'package:chispy_chikis/provider/provider.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -14,78 +16,6 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   TextEditingController searchController = TextEditingController();
-
-  List products = [
-    [
-      'Presas',
-      [
-        [
-          'https://static.vecteezy.com/system/resources/thumbnails/049/161/664/small/crispy-fried-chicken-leg-with-transparent-background-delicious-golden-brown-isolated-food-image-png.png',
-          'Presa de pierna',
-          '9.500',
-          'Es para comer y morir.'
-        ],
-        [
-          'https://static.vecteezy.com/system/resources/thumbnails/049/161/664/small/crispy-fried-chicken-leg-with-transparent-background-delicious-golden-brown-isolated-food-image-png.png',
-          'Presa de pierna',
-          '9.500',
-          'Es para comer y morir.'
-        ],
-        [
-          'https://static.vecteezy.com/system/resources/thumbnails/049/161/664/small/crispy-fried-chicken-leg-with-transparent-background-delicious-golden-brown-isolated-food-image-png.png',
-          'Presa de pierna',
-          '9.500',
-          'Es para comer y morir.'
-        ]
-      ]
-    ],
-    [
-      'Bebidas',
-      [
-        [
-          'https://static.vecteezy.com/system/resources/thumbnails/049/161/664/small/crispy-fried-chicken-leg-with-transparent-background-delicious-golden-brown-isolated-food-image-png.png',
-          'Presa de pierna',
-          '9.500',
-          'Es para comer y morir.'
-        ],
-        [
-          'https://static.vecteezy.com/system/resources/thumbnails/049/161/664/small/crispy-fried-chicken-leg-with-transparent-background-delicious-golden-brown-isolated-food-image-png.png',
-          'Presa de pierna',
-          '9.500',
-          'Es para comer y morir.'
-        ],
-        [
-          'https://static.vecteezy.com/system/resources/thumbnails/049/161/664/small/crispy-fried-chicken-leg-with-transparent-background-delicious-golden-brown-isolated-food-image-png.png',
-          'Presa de pierna',
-          '9.500',
-          'Es para comer y morir.'
-        ]
-      ]
-    ],
-    [
-      'Combos',
-      [
-        [
-          'https://static.vecteezy.com/system/resources/thumbnails/049/161/664/small/crispy-fried-chicken-leg-with-transparent-background-delicious-golden-brown-isolated-food-image-png.png',
-          'Presa de pierna',
-          '9.500',
-          'Es para comer y morir.'
-        ],
-        [
-          'https://static.vecteezy.com/system/resources/thumbnails/049/161/664/small/crispy-fried-chicken-leg-with-transparent-background-delicious-golden-brown-isolated-food-image-png.png',
-          'Presa de pierna',
-          '9.500',
-          'Es para comer y morir.'
-        ],
-        [
-          'https://static.vecteezy.com/system/resources/thumbnails/049/161/664/small/crispy-fried-chicken-leg-with-transparent-background-delicious-golden-brown-isolated-food-image-png.png',
-          'Presa de pierna',
-          '9.500',
-          'Es para comer y morir.'
-        ]
-      ]
-    ]
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -157,39 +87,68 @@ class HomeState extends State<Home> {
                               fontSize: 17,
                               color: colorsPalete['white']))
                     ])),
-            Expanded(
-                child: SingleChildScrollView(
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListView.builder(
-                              shrinkWrap: true,
-                              physics: BouncingScrollPhysics(),
-                              itemCount: products.length,
-                              itemBuilder: (context, index) {
-                                return HorizontalScrollHome(
-                                    title: products[index][0],
-                                    elements: products[index][1]);
-                              }),
-                          SizedBox(height: 70)
-                        ])))
-          ])),
-      Positioned(
-          bottom: 20,
-          left: 0,
-          right: 0,
-          child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              child: CustomButton(
-                  text: 'HACER PEDIDO',
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => PlaceOrder()));
-                  })))
+            Expanded(child:
+                Consumer<crispyProvider>(builder: (context, provider, child) {
+                  if(provider.isLoading){
+                    return Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 6,
+                        color: colorsPalete['dark blue']
+                      )
+                    );
+                  } else if(provider.getConnection && provider.clasifiedProducts.isNotEmpty){
+                    final products=provider.clasifiedProducts;
+                    return Stack(children: [
+                      ListView.builder(
+                          padding: EdgeInsets.only(bottom: 70),
+                          physics: BouncingScrollPhysics(),
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            return HorizontalScrollHome(
+                                title: products[index][0],
+                                elements: products[index][1]);
+                          }),
+                      Positioned(
+                          bottom: 20,
+                          left: 0,
+                          right: 0,
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 30),
+                              child: CustomButton(
+                                  text: 'HACER PEDIDO',
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                PlaceOrder()));
+                                  })))
+                    ]);
+                  }else{
+                    return Column(
+                      children: [
+                        Expanded(child: Container()),
+                        Center(
+                          child: Text('Revisa tu conexion a internet',
+                                style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 17,
+                                    color: colorsPalete['white']))
+                        ),
+                        Expanded(child: Container()),
+                        Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 30),
+                                child: CustomButton(
+                                    text: 'Intertar conectarse',
+                                    onPressed: () {
+                                      provider.checkConnection();
+                                    })),
+                        SizedBox(height: 20)
+                      ]
+                    );
+                  }
+            }))
+          ]))
     ]);
   }
 }

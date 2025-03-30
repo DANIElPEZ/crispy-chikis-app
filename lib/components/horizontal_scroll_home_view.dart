@@ -29,10 +29,11 @@ class HorizontalScrollHome extends StatelessWidget {
               itemCount: elements.length,
               itemBuilder: (context, index) {
                 return CardHome(
-                    image: elements[index][0],
+                    id: elements[index][0],
                     title: elements[index][1],
-                    price: elements[index][2],
-                  description: elements[index][3]
+                    description: elements[index][2],
+                    price: elements[index][3],
+                    image: elements[index][4]
                 );
               }))
     ]);
