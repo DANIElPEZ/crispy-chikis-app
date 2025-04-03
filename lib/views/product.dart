@@ -25,6 +25,44 @@ class Product extends StatelessWidget {
     ['Juan Torres', 4.5, 'Pollo muy delicioso']
   ];
 
+  Future<void> lookInformation(BuildContext context) async {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+            title: Text('¿Como dejar la reseña?',
+                style: GoogleFonts.nunito(
+                    color: colorsPalete['white'],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600)),
+            content: Container(
+              height: 80,
+              width: MediaQuery.of(context).size.width,
+              child: Text('Para dejar tu reseña puedes dejarla en el restaurante o enviarnos un correo.',
+              style: GoogleFonts.nunito(
+                color: colorsPalete['white'],
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600
+              ))
+            ),
+            backgroundColor: colorsPalete['dark brown'],
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cerrar',
+                      style: GoogleFonts.nunito(
+                          color: colorsPalete['white'],
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: colorsPalete['dark blue']))
+            ]
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +105,7 @@ class Product extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       fontSize: 21,
                       color: colorsPalete['white'])),
-              Text('Que incluye: $description',
+              Text('Descripcion: $description',
                   style: GoogleFonts.nunito(
                       fontWeight: FontWeight.w700,
                       fontSize: 21,
@@ -78,11 +116,18 @@ class Product extends StatelessWidget {
                       fontSize: 21,
                       color: colorsPalete['white'])),
               SizedBox(height: 15),
-              Text('Reseñas',
-                  style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 28,
-                      color: colorsPalete['white'])),
+              Row(
+                children: [
+                  Text('Reseñas',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 28,
+                          color: colorsPalete['white'])),
+                  IconButton(onPressed: (){
+                    lookInformation(context);
+                  }, icon: Icon(Icons.info, color: colorsPalete['white'], size: 28))
+                ]
+              ),
               Expanded(
                 child: ListView.builder(
                     physics: BouncingScrollPhysics(),

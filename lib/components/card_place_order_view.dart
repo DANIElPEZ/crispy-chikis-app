@@ -1,6 +1,8 @@
 import 'package:chispy_chikis/color/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:chispy_chikis/provider/provider.dart';
 
 class CardPlaceOrder extends StatefulWidget {
   CardPlaceOrder(
@@ -43,11 +45,17 @@ class _CardPlaceOrderState extends State<CardPlaceOrder>
     setState(() => isAdded = false);
   }
 
+  Future<void> addProducts(int id, String title, double price) async{
+    final provider=Provider.of<crispyProvider>(context, listen: false);
+    await provider.addProducts(id, title, price);
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: (){
           toggleAdded();
+          addProducts(widget.id, widget.title, widget.price);
         },
         child: Card(
             elevation: 5,

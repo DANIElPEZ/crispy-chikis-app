@@ -107,16 +107,16 @@ class CardOrderState extends State<CardOrder> {
                                   child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        SizedBox(width: 35),
+                                        SizedBox(width: 30),
                                         Text(widget.order[index][0].toString(),
                                             style: GoogleFonts.nunito(
                                                 color: colorsPalete['white'],
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w600)),
-                                        SizedBox(width: 30),
+                                        SizedBox(width: 40),
                                         Container(
                                             constraints:
-                                                BoxConstraints(maxWidth: 130),
+                                                BoxConstraints(maxWidth: 120),
                                             child: Text(widget.order[index][1],
                                                 softWrap: true,
                                                 maxLines: 3,

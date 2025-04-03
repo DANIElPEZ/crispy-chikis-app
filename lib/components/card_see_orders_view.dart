@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:chispy_chikis/color/colors.dart';
+import 'package:chispy_chikis/provider/provider.dart';
+import 'package:provider/provider.dart';
 
 class CardSeeOrder extends StatefulWidget {
-  CardSeeOrder({required this.quantity, required this.product});
+  CardSeeOrder({required this.id, required this.product});
 
-  int quantity;
+  int id;
   String product;
 
   @override
@@ -13,6 +15,12 @@ class CardSeeOrder extends StatefulWidget {
 }
 
 class CardSeeOrderState extends State<CardSeeOrder> {
+
+  Future<void> deleteProduct(int id) async{
+    final provider=Provider.of<crispyProvider>(context, listen: false);
+    await provider.deleteProduct(id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -25,12 +33,6 @@ class CardSeeOrderState extends State<CardSeeOrder> {
           padding: EdgeInsets.symmetric(horizontal: 30),
           height: 70,
           child: Row(children: [
-            Text(widget.quantity.toString(),
-                style: GoogleFonts.nunito(
-                    color: colorsPalete['white'],
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700)),
-            SizedBox(width: 60),
             Text(widget.product,
                 style: GoogleFonts.nunito(
                     color: colorsPalete['white'],
@@ -38,10 +40,12 @@ class CardSeeOrderState extends State<CardSeeOrder> {
                     fontWeight: FontWeight.w600)),
             Expanded(child: Container()),
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  deleteProduct(widget.id);
+                },
                 icon:
                     Icon(Icons.delete_forever_outlined, color: colorsPalete['white'], size: 30))
-          ]),
+          ])
         ));
   }
 }

@@ -14,7 +14,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
-      height: 50,
+      height: 55,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
@@ -28,8 +28,8 @@ class CustomButton extends StatelessWidget {
           color: colorsPalete['pink'],
           fontSize: 22,
           fontWeight: FontWeight.w700
-        ),)
-      ),
+        ))
+      )
     );
   }
 }

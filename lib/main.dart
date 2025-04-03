@@ -14,7 +14,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   loadSupabase();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_){
-    runApp(MultiProvider(providers: [ChangeNotifierProvider(create: (_)=>crispyProvider())], child: MainView()));
+    runApp(MultiProvider(
+        providers: [ChangeNotifierProvider(create: (_)=>crispyProvider())],
+        child: MainView(indexView: 1)));
   });
 }
 
@@ -25,17 +27,23 @@ Future<void> loadSupabase()async{
 }
 
 class MainView extends StatefulWidget {
+  MainView({required this.indexView});
+  int indexView;
   @override
   State<MainView> createState() => MainViewState();
 }
 
 class MainViewState extends State<MainView> {
-  int indexView=1;
+  int? indexView;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_)async{
+      await initializeData();
+    });
     initializeData();
+    indexView=widget.indexView;
   }
 
   Future<void> initializeData()async{
@@ -63,14 +71,14 @@ class MainViewState extends State<MainView> {
                   setState(()=>indexView=index);
                 },
                 backgroundColor: colorsPalete['white'],
-                selectedIndex: indexView,
+                selectedIndex: indexView!,
                 indicatorColor: Colors.transparent,
                 destinations: [
                   NavigationDestination(icon: Icon(indexView==0?Icons.shopping_cart_rounded:Icons.shopping_cart_outlined, size: 34, color: indexView==0?colorsPalete['dark blue']:Colors.black), label: ''),
                   NavigationDestination(icon: Icon(indexView==1?Icons.home:Icons.home_outlined, size: 34, color: indexView==1?colorsPalete['dark blue']:Colors.black), label: ''),
                   NavigationDestination(icon: Icon(indexView==2?Icons.person:Icons.person_outline, size: 34, color: indexView==2?colorsPalete['dark blue']:Colors.black), label: '')
                 ]),
-          body: [Orders(),Home(),Profile()][indexView]
+          body: [Orders(),Home(),Profile()][indexView!]
             )
       ),
     );

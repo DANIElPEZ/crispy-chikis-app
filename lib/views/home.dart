@@ -8,6 +8,7 @@ import 'package:chispy_chikis/views/make_order_view/place_order.dart';
 import 'package:chispy_chikis/components/horizontal_scroll_home_view.dart';
 import 'package:provider/provider.dart';
 import 'package:chispy_chikis/provider/provider.dart';
+import 'package:chispy_chikis/model/product_model.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -16,6 +17,47 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   TextEditingController searchController = TextEditingController();
+  List<List<dynamic>> filteredGroupedProducts = [];
+  crispyProvider? provider;
+
+  @override
+  void initState() {
+    super.initState();
+    provider = Provider.of<crispyProvider>(context, listen: false);
+    searchController.addListener(filterProducts);
+    setState(()=>filteredGroupedProducts=provider!.clasifiedProducts);
+  }
+
+  void filterProducts() {
+    String query = searchController.text.toLowerCase();
+
+    setState(() {
+      filteredGroupedProducts = provider!.clasifiedProducts
+          .map((category) {
+        String categoryName = category[0];
+        List<List<dynamic>> products = category[1];
+
+        List<List<dynamic>> filteredProducts = products
+            .where((product) => product[1].toLowerCase().contains(query))
+            .toList();
+
+        if (filteredProducts.isNotEmpty) {
+          return [categoryName, filteredProducts];
+        } else {
+          return null;
+        }
+      })
+          .where((category) => category != null)
+          .toList()
+          .cast<List<dynamic>>();
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,14 +141,23 @@ class HomeState extends State<Home> {
                   } else if(provider.getConnection && provider.clasifiedProducts.isNotEmpty){
                     final products=provider.clasifiedProducts;
                     return Stack(children: [
+                      filteredGroupedProducts.isEmpty?
                       ListView.builder(
-                          padding: EdgeInsets.only(bottom: 70),
+                          padding: EdgeInsets.only(bottom: 80),
                           physics: BouncingScrollPhysics(),
                           itemCount: products.length,
                           itemBuilder: (context, index) {
                             return HorizontalScrollHome(
                                 title: products[index][0],
                                 elements: products[index][1]);
+                          }):ListView.builder(
+                          padding: EdgeInsets.only(bottom: 80),
+                          physics: BouncingScrollPhysics(),
+                          itemCount: filteredGroupedProducts.length,
+                          itemBuilder: (context, index) {
+                            return HorizontalScrollHome(
+                                title: filteredGroupedProducts[index][0],
+                                elements: filteredGroupedProducts[index][1]);
                           }),
                       Positioned(
                           bottom: 20,
@@ -117,11 +168,21 @@ class HomeState extends State<Home> {
                               child: CustomButton(
                                   text: 'HACER PEDIDO',
                                   onPressed: () {
+                                    if(provider.user.isNotEmpty){
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (BuildContext context) =>
-                                                PlaceOrder()));
+                                                PlaceOrder()));}else{
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                        content: Text('Coloca los datos del perfil',
+                                            style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 18,
+                                                color: colorsPalete['white'])),
+                                        backgroundColor: colorsPalete['light brown'],
+                                      ));
+                                    }
                                   })))
                     ]);
                   }else{

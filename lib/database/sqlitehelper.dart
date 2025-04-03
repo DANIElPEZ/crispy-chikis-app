@@ -16,25 +16,26 @@ class DatabaseHelper {
     return await openDatabase(path, version: 1, onCreate: (db, version) {
       db.execute('''
           CREATE TABLE IF NOT EXISTS user(
-            id INTEGER PRIMARY KEY,
+            usuario_id INTEGER PRIMARY KEY,
             nombre TEXT,
             email TEXT,
-            telefono INTEGER
+            telefono INTEGER,
+            acepto INTEGER
           );
           ''');
     });
   }
 
-  Future<Map<String, dynamic>> getUser() async {
+  Future<List> getUser() async {
     final db = await database;
-    final List<Map<String, dynamic>> result = await db.query('user', limit: 1);
-    return result.isNotEmpty ? result.first : {};
+    final result = await db.query('user', limit: 1);
+    return result.isNotEmpty ? result : [];
   }
 
   Future<void> insertORupdate(Map<String, dynamic> user) async {
     final db = await database;
     final isExist =
-        await db.query('user', where: 'id=?', whereArgs: [user['id']]);
+        await db.query('user', where: 'usuario_id=?', whereArgs: [user['usuario_id']]);
     if (isExist.isEmpty) {
       await db.insert('user', user,
           conflictAlgorithm: ConflictAlgorithm.replace);
@@ -45,6 +46,6 @@ class DatabaseHelper {
 
   Future<void> update(Map<String, dynamic> user) async {
     final db = await database;
-    await db.update('user', user, where: 'id=?', whereArgs: [user['id']]);
+    await db.update('user', user, where: 'usuario_id=?', whereArgs: [user['usuario_id']]);
   }
 }

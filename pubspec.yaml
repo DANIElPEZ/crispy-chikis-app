@@ -1,5 +1,4 @@
 name: chispy_chikis
-description: "A new Flutter project."
 publish_to: 'none'
 version: 1.0.0
 environment:
@@ -15,6 +14,7 @@ dependencies:
   connectivity_plus: ^6.1.3
   font_awesome_flutter: ^10.8.0
   sqflite: ^2.4.1
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:
