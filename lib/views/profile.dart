@@ -63,6 +63,7 @@ class ProfileState extends State<Profile> {
               color: colorsPalete['white'])),
       backgroundColor: colorsPalete['light brown']
     ));
+    provider.loadUser();
   }
 
   String sanitizeName(String name){
@@ -137,7 +138,7 @@ class ProfileState extends State<Profile> {
                           color: colorsPalete['orange'],
                           height:87,
                           width: MediaQuery.of(context).size.width
-                      ),
+                      )
                     ),
                     Positioned(
                         bottom: 20,

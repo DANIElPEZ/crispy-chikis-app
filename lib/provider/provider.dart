@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:chispy_chikis/database/sqlitehelper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:chispy_chikis/model/product_model.dart';
+import 'package:chispy_chikis/model/order_model.dart';
+import 'package:chispy_chikis/model/comment.dart';
 
 class crispyProvider extends ChangeNotifier {
   crispyProvider() {
@@ -27,7 +29,10 @@ class crispyProvider extends ChangeNotifier {
   double totalWithoutIva = 0;
 
   //get user
-   final List user=[];
+  final List user = [];
+
+  //get comment by product
+  List comments=[];
 
   //list tables
   Map<String, String> tables = {
@@ -112,7 +117,27 @@ class crispyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchOrders(int id) async {
+  Future<void> fecthCommentsByProduct(int id) async {
+    isLoading = true;
+    notifyListeners();
+    checkConnection();
+    try{
+      if(!getConnection){
+        comments=[];
+        return;
+      }
+      final response=await Supabase.instance.client.from(tables['table5'].toString()).select('nombre_user, descripcion, puntuacion').eq('producto_id', id);
+
+      comments=List<CommentModel>.from(
+          response.map((comment) => CommentModel.fromJSON(comment)));
+    }catch(e){
+      comments=[];
+    }
+    isLoading=false;
+    notifyListeners();
+  }
+
+  Future<void> fetchOrders() async {
     isLoading = true;
     checkConnection();
     notifyListeners();
@@ -123,9 +148,11 @@ class crispyProvider extends ChangeNotifier {
       }
       final response = await Supabase.instance.client
           .from(tables['table3'].toString())
-          .select()
-          .eq('usuario_id', id);
-      orders = [];
+          .select('productos, fecha_creacion_pedido, estado')
+          .eq('usuario_id', user[0]['usuario_id']);
+
+      orders = List<OrderModel>.from(
+          response.map((order) => OrderModel.fromJSON(order)));
     } catch (e) {
       orders = [];
     }
@@ -136,6 +163,40 @@ class crispyProvider extends ChangeNotifier {
   Future<void> addProducts(int id, String title, double price) async {
     myProducts.add([id, title, price]);
     notifyListeners();
+  }
+
+  Future<bool> makeOrder(String direccion, String metodoPago) async {
+    try {
+      if (!getConnection || direccion.isEmpty) return false;
+
+      final productosPedido = [];
+
+      for (int i = 0; i < myProducts.length; i++) {
+        productosPedido.add(myProducts[i][0]);
+      }
+
+      final Map<String, dynamic> order = {
+        'usuario_id': user[0]['usuario_id'],
+        'productos': productosPedido,
+        'direccion': direccion,
+        'precio_total': total,
+        'fecha_creacion_pedido': DateTime.now().toString(),
+        'estado': 1
+      };
+
+      final response = await Supabase.instance.client
+          .from(tables['table3'].toString())
+          .insert(order)
+          .select();
+      await Supabase.instance.client.from(tables['table4'].toString()).insert({
+        'orden_id': response.first['orden_id'],
+        'metodo': metodoPago == 'Efectivo' ? 1 : 2
+      });
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<void> deleteProduct(int id) async {
@@ -202,6 +263,7 @@ class crispyProvider extends ChangeNotifier {
           'acepto': userSupabase.first['acepto']
         };
         await dbHelper.insertORupdate(userMap);
+        await loadUser();
         return true;
       } catch (e) {
         return false;

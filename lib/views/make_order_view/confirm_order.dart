@@ -28,6 +28,15 @@ class ConfirmOrderState extends State<ConfirmOrder> {
             (Route<dynamic> route) => false);
   }
 
+  Future<bool> confirmOrder()async{
+    final String direccion=directionController.text;
+    final String metodoPago=dropDownValue;
+    final provider=Provider.of<crispyProvider>(context,listen: false);
+    final bool isMaked=await provider.makeOrder(direccion, metodoPago);
+    await provider.fetchOrders();
+    return isMaked;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,8 +120,20 @@ class ConfirmOrderState extends State<ConfirmOrder> {
                     bottom: 20,
                     left: 180,
                     right: 20,
-                    child: CustomButton(text: 'HACER PAGO', onPressed: () {
-                      redirectToOrders();
+                    child: CustomButton(text: 'HACER PAGO', onPressed: () async{
+                      final bool isMaked=await confirmOrder();
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(
+                        content: Text(isMaked?'Pedido realizado con exito':'No se pudo realizar el pedido',
+                            style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18,
+                                color: colorsPalete['white'])),
+                        backgroundColor:
+                        colorsPalete['light brown'],
+                      ));
+                      await Future.delayed(Duration(seconds: 5));
+                      if(isMaked) redirectToOrders();
                     })),
                 Positioned(
                     bottom: 20,

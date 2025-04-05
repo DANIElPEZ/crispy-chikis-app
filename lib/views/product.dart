@@ -4,8 +4,10 @@ import 'package:chispy_chikis/components/main_button.dart';
 import 'package:chispy_chikis/color/colors.dart';
 import 'package:chispy_chikis/components/appbar.dart';
 import 'package:chispy_chikis/components/review_product.dart';
+import 'package:provider/provider.dart';
+import 'package:chispy_chikis/provider/provider.dart';
 
-class Product extends StatelessWidget {
+class Product extends StatefulWidget {
   Product(
       {required this.id,
       required this.image,
@@ -16,14 +18,21 @@ class Product extends StatelessWidget {
   String image, title, description, price;
   int id;
 
-  List reviews = [
-    ['Juan Torres', 3.5, 'Pollo muy delicioso'],
-    ['Juan Torres', 4.0, 'Pollo muy delicioso'],
-    ['Juan Torres', 3.0, 'Pollo muy delicioso'],
-    ['Juan Torres', 1.5, 'Pollo muy delicioso'],
-    ['Juan Torres', 2.5, 'Pollo muy delicioso'],
-    ['Juan Torres', 4.5, 'Pollo muy delicioso']
-  ];
+  @override
+  State<Product> createState() => _ProductState();
+}
+
+class _ProductState extends State<Product> {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<crispyProvider>(context, listen: false);
+      provider.checkConnection();
+      provider.fecthCommentsByProduct(widget.id);
+    });
+  }
 
   Future<void> lookInformation(BuildContext context) async {
     return showDialog(
@@ -82,77 +91,120 @@ class Product extends StatelessWidget {
                   color: colorsPalete['orange'],
                   width: MediaQuery.of(context).size.width)),
         ]),
-        Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              SizedBox(height: 10),
-              Center(
-                  child: Column(children: [
-                Image.network(image, height: 200),
-                SizedBox(height: 12),
-                Text('Detalle del producto',
-                    style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 28,
-                        color: colorsPalete['white'])),
-              ])),
-              SizedBox(height: 10),
-              Text(title,
-                  style: GoogleFonts.nunito(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 21,
-                      color: colorsPalete['white'])),
-              Text('Descripcion: $description',
-                  style: GoogleFonts.nunito(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 21,
-                      color: colorsPalete['white'])),
-              Text('Precio: \$$price',
-                  style: GoogleFonts.nunito(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 21,
-                      color: colorsPalete['white'])),
-              SizedBox(height: 15),
-              Row(
-                children: [
-                  Text('Reseñas',
-                      style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 28,
-                          color: colorsPalete['white'])),
-                  IconButton(onPressed: (){
-                    lookInformation(context);
-                  }, icon: Icon(Icons.info, color: colorsPalete['white'], size: 28))
-                ]
-              ),
-              Expanded(
-                child: ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    itemCount: reviews.length,
-                    itemBuilder: (context, index) {
-                      return Review(
-                          name: reviews[index][0],
-                          stars: reviews[index][1],
-                          comment: reviews[index][2]);
-                    }),
-              ),SizedBox(height: 70)
-            ])),
-        Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: CustomButton(
-                    text: 'VOLVER',
-                    onPressed: () {
-                      Navigator.pop(context);
-                    })))
-      ]),
+        Consumer<crispyProvider>(
+            builder: (context, provider, child) {
+              if(provider.getConnection) {
+                final reviews=provider.comments;
+                return Stack(
+                  children: [
+                    Container(
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
+                        height: MediaQuery
+                            .of(context)
+                            .size
+                            .height,
+                        padding: EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 30),
+                        child:
+                        Column(crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 10),
+                              Center(
+                                  child: Column(children: [
+                                    Image.network(widget.image, height: 200),
+                                    SizedBox(height: 12),
+                                    Text('Detalle del producto',
+                                        style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 28,
+                                            color: colorsPalete['white'])),
+                                  ])),
+                              SizedBox(height: 10),
+                              Text(widget.title,
+                                  style: GoogleFonts.nunito(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 21,
+                                      color: colorsPalete['white'])),
+                              Text('Descripcion: ${widget.description}',
+                                  style: GoogleFonts.nunito(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 21,
+                                      color: colorsPalete['white'])),
+                              Text('Precio: \$${widget.price}',
+                                  style: GoogleFonts.nunito(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 21,
+                                      color: colorsPalete['white'])),
+                              SizedBox(height: 15),
+                              Row(
+                                  children: [
+                                    Text('Reseñas',
+                                        style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 28,
+                                            color: colorsPalete['white'])),
+                                    IconButton(onPressed: () {
+                                      lookInformation(context);
+                                    },
+                                        icon: Icon(Icons.info,
+                                            color: colorsPalete['white'],
+                                            size: 28))
+                                  ]
+                              ),
+                              reviews.isNotEmpty?
+                              Expanded(
+                                child: ListView.builder(
+                                    physics: BouncingScrollPhysics(),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: reviews.length,
+                                    itemBuilder: (context, index) {
+                                      return Review(
+                                          name: reviews[index].nombre,
+                                          stars: reviews[index].puntuacion,
+                                          comment: reviews[index].descripcion);
+                                    }),
+                              ):Center(
+                                  child: Text('No hay reseñas',
+                                      style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 17,
+                                          color: colorsPalete['white']))
+                              ), SizedBox(height: 80)
+                            ])),
+                    Positioned(
+                        bottom: 20,
+                        left: 0,
+                        right: 0,
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 30),
+                            child: CustomButton(
+                                text: 'VOLVER',
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                })))
+                  ]
+                );
+              }else{
+                return Column(
+                    children: [
+                      Expanded(child: Container()),
+                      Center(
+                          child: Text('Revisa tu conexion a internet',
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 17,
+                                  color: colorsPalete['white']))
+                      ),
+                      Expanded(child: Container())
+                    ]
+                );
+              }
+          }
+        )
+      ])
     );
   }
 }

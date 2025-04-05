@@ -25,7 +25,7 @@ class HomeState extends State<Home> {
     super.initState();
     provider = Provider.of<crispyProvider>(context, listen: false);
     searchController.addListener(filterProducts);
-    setState(()=>filteredGroupedProducts=provider!.clasifiedProducts);
+    setState(() => filteredGroupedProducts = provider!.clasifiedProducts);
   }
 
   void filterProducts() {
@@ -34,19 +34,19 @@ class HomeState extends State<Home> {
     setState(() {
       filteredGroupedProducts = provider!.clasifiedProducts
           .map((category) {
-        String categoryName = category[0];
-        List<List<dynamic>> products = category[1];
+            String categoryName = category[0];
+            List<List<dynamic>> products = category[1];
 
-        List<List<dynamic>> filteredProducts = products
-            .where((product) => product[1].toLowerCase().contains(query))
-            .toList();
+            List<List<dynamic>> filteredProducts = products
+                .where((product) => product[1].toLowerCase().contains(query))
+                .toList();
 
-        if (filteredProducts.isNotEmpty) {
-          return [categoryName, filteredProducts];
-        } else {
-          return null;
-        }
-      })
+            if (filteredProducts.isNotEmpty) {
+              return [categoryName, filteredProducts];
+            } else {
+              return null;
+            }
+          })
           .where((category) => category != null)
           .toList()
           .cast<List<dynamic>>();
@@ -131,18 +131,17 @@ class HomeState extends State<Home> {
                     ])),
             Expanded(child:
                 Consumer<crispyProvider>(builder: (context, provider, child) {
-                  if(provider.isLoading){
-                    return Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 6,
-                        color: colorsPalete['dark blue']
-                      )
-                    );
-                  } else if(provider.getConnection && provider.clasifiedProducts.isNotEmpty){
-                    final products=provider.clasifiedProducts;
-                    return Stack(children: [
-                      filteredGroupedProducts.isEmpty?
-                      ListView.builder(
+                  provider.checkConnection();
+              if (provider.isLoading) {
+                return Center(
+                    child: CircularProgressIndicator(
+                        strokeWidth: 6, color: colorsPalete['dark blue']));
+              } else if (provider.getConnection &&
+                  provider.clasifiedProducts.isNotEmpty) {
+                final products = provider.clasifiedProducts;
+                return Stack(children: [
+                  filteredGroupedProducts.isEmpty
+                      ? ListView.builder(
                           padding: EdgeInsets.only(bottom: 80),
                           physics: BouncingScrollPhysics(),
                           itemCount: products.length,
@@ -150,7 +149,8 @@ class HomeState extends State<Home> {
                             return HorizontalScrollHome(
                                 title: products[index][0],
                                 elements: products[index][1]);
-                          }):ListView.builder(
+                          })
+                      : ListView.builder(
                           padding: EdgeInsets.only(bottom: 80),
                           physics: BouncingScrollPhysics(),
                           itemCount: filteredGroupedProducts.length,
@@ -159,55 +159,55 @@ class HomeState extends State<Home> {
                                 title: filteredGroupedProducts[index][0],
                                 elements: filteredGroupedProducts[index][1]);
                           }),
-                      Positioned(
-                          bottom: 20,
-                          left: 0,
-                          right: 0,
-                          child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 30),
-                              child: CustomButton(
-                                  text: 'HACER PEDIDO',
-                                  onPressed: () {
-                                    if(provider.user.isNotEmpty){
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                PlaceOrder()));}else{
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                        content: Text('Coloca los datos del perfil',
-                                            style: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 18,
-                                                color: colorsPalete['white'])),
-                                        backgroundColor: colorsPalete['light brown'],
-                                      ));
-                                    }
-                                  })))
-                    ]);
-                  }else{
-                    return Column(
-                      children: [
-                        Expanded(child: Container()),
-                        Center(
-                          child: Text('Revisa tu conexion a internet',
-                                style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 17,
-                                    color: colorsPalete['white']))
-                        ),
-                        Expanded(child: Container()),
-                        Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 30),
-                                child: CustomButton(
-                                    text: 'Intertar conectarse',
-                                    onPressed: () {
-                                      provider.checkConnection();
-                                    })),
-                        SizedBox(height: 20)
-                      ]
-                    );
-                  }
+                  Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30),
+                          child: CustomButton(
+                              text: 'HACER PEDIDO',
+                              onPressed: () {
+                                if (provider.user.isNotEmpty) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              PlaceOrder()));
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: Text('Coloca los datos del perfil',
+                                        style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                            color: colorsPalete['white'])),
+                                    backgroundColor:
+                                        colorsPalete['light brown'],
+                                  ));
+                                }
+                              })))
+                ]);
+              } else {
+                return Column(children: [
+                  Expanded(child: Container()),
+                  Center(
+                      child: Text('Revisa tu conexion a internet',
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 17,
+                              color: colorsPalete['white']))),
+                  Expanded(child: Container()),
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30),
+                      child: CustomButton(
+                          text: 'Intertar conectarse',
+                          onPressed: () {
+                            provider.checkConnection();
+                          })),
+                  SizedBox(height: 20)
+                ]);
+              }
             }))
           ]))
     ]);

@@ -2,6 +2,8 @@ import 'package:chispy_chikis/color/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:chispy_chikis/views/product.dart';
+import 'package:provider/provider.dart';
+import 'package:chispy_chikis/provider/provider.dart';
 
 class CardHome extends StatelessWidget{
   CardHome({
@@ -18,8 +20,9 @@ class CardHome extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context)=>Product(id: 1, image: image, title: title, description: description, price: price.toString())));
+        onTap: () {
+          Provider.of<crispyProvider>(context, listen: false).fecthCommentsByProduct(id);
+          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context)=>Product(id: id, image: image, title: title, description: description, price: price.toString())));
         },
         child: Card(
           elevation: 10,

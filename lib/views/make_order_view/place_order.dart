@@ -88,6 +88,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         ])),
                 Expanded(child: Consumer<crispyProvider>(
                     builder: (context, provider, child) {
+                      provider.checkConnection();
                       if(provider.isLoading){
                         return Center(
                             child: CircularProgressIndicator(
