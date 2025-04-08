@@ -61,6 +61,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(kToolbarHeight),
             child: CustomAppBar(
@@ -80,7 +81,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                           CustomTextField(
                               controller: searchController, labelText: ''),
                           SizedBox(height: 25),
-                          Text('Menu de productos',
+                          Text('Menu de productos (desliza)',
                               style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 17,
@@ -110,7 +111,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                       title: products[index][0],
                                       elements: products[index][1]);
                                 }):ListView.builder(
-                                padding: EdgeInsets.only(bottom: 80),
+                                padding: EdgeInsets.only(bottom: 150),
                                 physics: BouncingScrollPhysics(),
                                 itemCount: filteredGroupedProducts.length,
                                 itemBuilder: (context, index) {
@@ -124,14 +125,32 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 right: 0,
                                 child: Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 30),
-                                    child: CustomButton(
-                                        text: 'VER PEDIDO',
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (BuildContext context) => SeeOrder()));
-                                        })))
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        FloatingActionButton.extended(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            backgroundColor: colorsPalete['dark brown'],
+                                            icon:
+                                            Icon(Icons.arrow_back, color: colorsPalete['pink']),
+                                            label: Text('Regresar',
+                                                style: GoogleFonts.nunito(
+                                                    color: colorsPalete['pink'],
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.w700))),
+                                        SizedBox(height: 9),
+                                        CustomButton(
+                                            text: 'VER PEDIDO',
+                                            onPressed: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (BuildContext context) => SeeOrder()));
+                                            }),
+                                      ],
+                                    )))
                           ]
                         );
                   }else{
@@ -145,7 +164,32 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                       fontSize: 17,
                                       color: colorsPalete['white']))
                             ),
-                            Expanded(child: Container())
+                            Expanded(child: Container()),
+                            Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                                child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FloatingActionButton.extended(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        backgroundColor: colorsPalete['dark brown'],
+                                        icon:
+                                        Icon(Icons.arrow_back, color: colorsPalete['pink']),
+                                        label: Text('Regresar',
+                                            style: GoogleFonts.nunito(
+                                                color: colorsPalete['pink'],
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.w700))),
+                                    SizedBox(height: 12),
+                                    CustomButton(
+                                        text: 'Intertar conectarse',
+                                        onPressed: () {
+                                          provider.checkConnection();
+                                        })
+                                  ]
+                                ))
                           ]
                         );
                       }

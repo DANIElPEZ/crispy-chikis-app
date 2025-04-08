@@ -123,7 +123,7 @@ class HomeState extends State<Home> {
                       CustomTextField(
                           controller: searchController, labelText: ''),
                       SizedBox(height: 25),
-                      Text('Menu de productos',
+                      Text('Menu de productos (desliza)',
                           style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w700,
                               fontSize: 17,
@@ -169,15 +169,29 @@ class HomeState extends State<Home> {
                               text: 'HACER PEDIDO',
                               onPressed: () {
                                 if (provider.user.isNotEmpty) {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              PlaceOrder()));
+                                  print(provider.user[0]['acepto']);
+                                  if(provider.user[0]['acepto']==1) {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                PlaceOrder()));
+                                    }else{
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text('Acepta el tratamiento de datos.',
+                                          style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 18,
+                                              color: colorsPalete['white'])),
+                                      backgroundColor:
+                                      colorsPalete['light brown'],
+                                    ));
+                                  }
                                 } else {
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(SnackBar(
-                                    content: Text('Coloca los datos del perfil',
+                                    content: Text('Coloca los datos del perfil.',
                                         style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.w500,
                                             fontSize: 18,

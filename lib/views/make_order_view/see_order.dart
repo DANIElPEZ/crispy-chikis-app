@@ -90,14 +90,44 @@ class SeeOrder extends StatelessWidget {
                       ]);
                     }
                   } else {
-                    return Stack(alignment: Alignment.center, children: [
-                      Center(
-                          child: Text('No tienes productos en tu pedido',
-                              style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 17,
-                                  color: colorsPalete['white'])))
-                    ]);
+                    return Column(
+                        children: [
+                          Expanded(child: Container()),
+                          Center(
+                              child: Text('Revisa tu conexion a internet',
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 17,
+                                      color: colorsPalete['white']))
+                          ),
+                          Expanded(child: Container()),
+                          Padding(
+                              padding: EdgeInsets.symmetric(vertical: 20),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FloatingActionButton.extended(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        backgroundColor: colorsPalete['dark brown'],
+                                        icon:
+                                        Icon(Icons.arrow_back, color: colorsPalete['pink']),
+                                        label: Text('Regresar',
+                                            style: GoogleFonts.nunito(
+                                                color: colorsPalete['pink'],
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.w700))),
+                                    SizedBox(height: 12),
+                                    CustomButton(
+                                        text: 'Intertar conectarse',
+                                        onPressed: () {
+                                          provider.checkConnection();
+                                        })
+                                  ]
+                              ))
+                        ]
+                    );
                   }
                 }))
               ]))

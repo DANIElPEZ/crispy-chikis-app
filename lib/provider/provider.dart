@@ -29,7 +29,7 @@ class crispyProvider extends ChangeNotifier {
   double totalWithoutIva = 0;
 
   //get user
-  final List user = [];
+  List user = [];
 
   //get comment by product
   List comments=[];
@@ -193,6 +193,8 @@ class crispyProvider extends ChangeNotifier {
         'metodo': metodoPago == 'Efectivo' ? 1 : 2
       });
 
+      myProducts=[];
+      notifyListeners();
       return true;
     } catch (e) {
       return false;
@@ -241,7 +243,9 @@ class crispyProvider extends ChangeNotifier {
           'telefono': userSupabase.first['telefono'],
           'acepto': userSupabase.first['acepto']
         };
+
         await dbHelper.insertORupdate(userMap);
+        await loadUser();
         return true;
       } catch (e) {
         print(e);
@@ -273,6 +277,7 @@ class crispyProvider extends ChangeNotifier {
 
   Future<void> loadUser() async {
     final userSqlite = await dbHelper.getUser();
+    user.clear();
     user.add(userSqlite.first);
     notifyListeners();
   }
