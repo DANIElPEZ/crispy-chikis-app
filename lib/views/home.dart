@@ -132,77 +132,101 @@ class HomeState extends State<Home> {
             Expanded(child:
                 Consumer<crispyProvider>(builder: (context, provider, child) {
                   provider.checkConnection();
-              if (provider.isLoading) {
-                return Center(
-                    child: CircularProgressIndicator(
-                        strokeWidth: 6, color: colorsPalete['dark blue']));
-              } else if (provider.getConnection &&
-                  provider.clasifiedProducts.isNotEmpty) {
-                final products = provider.clasifiedProducts;
-                return Stack(children: [
-                  filteredGroupedProducts.isEmpty
-                      ? ListView.builder(
-                          padding: EdgeInsets.only(bottom: 80),
-                          physics: BouncingScrollPhysics(),
-                          itemCount: products.length,
-                          itemBuilder: (context, index) {
-                            return HorizontalScrollHome(
-                                title: products[index][0],
-                                elements: products[index][1]);
-                          })
-                      : ListView.builder(
-                          padding: EdgeInsets.only(bottom: 80),
-                          physics: BouncingScrollPhysics(),
-                          itemCount: filteredGroupedProducts.length,
-                          itemBuilder: (context, index) {
-                            return HorizontalScrollHome(
-                                title: filteredGroupedProducts[index][0],
-                                elements: filteredGroupedProducts[index][1]);
-                          }),
-                  Positioned(
-                      bottom: 20,
-                      left: 0,
-                      right: 0,
-                      child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 30),
-                          child: CustomButton(
-                              text: 'HACER PEDIDO',
-                              onPressed: () {
-                                if (provider.user.isNotEmpty) {
-                                  print(provider.user[0]['acepto']);
-                                  if(provider.user[0]['acepto']==1) {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                PlaceOrder()));
-                                    }else{
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                      content: Text('Acepta el tratamiento de datos.',
-                                          style: GoogleFonts.poppins(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                              color: colorsPalete['white'])),
-                                      backgroundColor:
-                                      colorsPalete['light brown'],
-                                    ));
-                                  }
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
-                                    content: Text('Coloca los datos del perfil.',
-                                        style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 18,
-                                            color: colorsPalete['white'])),
-                                    backgroundColor:
-                                        colorsPalete['light brown'],
-                                  ));
-                                }
-                              })))
-                ]);
-              } else {
+                  if(provider.getConnection){
+                    if (provider.isLoading) {
+                      return Center(
+                          child: CircularProgressIndicator(
+                              strokeWidth: 6, color: colorsPalete['dark blue']));
+                    }else if (provider.clasifiedProducts.isNotEmpty) {
+                      final products = provider.clasifiedProducts;
+                      return Stack(children: [
+                        filteredGroupedProducts.isEmpty
+                            ? ListView.builder(
+                            padding: EdgeInsets.only(bottom: 80),
+                            physics: BouncingScrollPhysics(),
+                            itemCount: products.length,
+                            itemBuilder: (context, index) {
+                              return HorizontalScrollHome(
+                                  title: products[index][0],
+                                  elements: products[index][1]);
+                            })
+                            : ListView.builder(
+                            padding: EdgeInsets.only(bottom: 80),
+                            physics: BouncingScrollPhysics(),
+                            itemCount: filteredGroupedProducts.length,
+                            itemBuilder: (context, index) {
+                              return HorizontalScrollHome(
+                                  title: filteredGroupedProducts[index][0],
+                                  elements: filteredGroupedProducts[index][1]);
+                            }),
+                        Positioned(
+                            bottom: 20,
+                            left: 0,
+                            right: 0,
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 30),
+                                child: CustomButton(
+                                    text: 'HACER PEDIDO',
+                                    onPressed: () async{
+                                      final isBetween=await provider.getCurrentTime();
+
+                                      if(isBetween==null){
+                                        errorGetHour(context);
+                                        return;
+                                      }
+
+                                      print(isBetween);
+
+                                      if(!isBetween){
+                                        restaurantTime(context);
+                                        return;
+                                      }
+
+                                      if (provider.user.isNotEmpty) {
+                                        if(provider.user[0]['acepto']==1) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (BuildContext context) =>
+                                                      PlaceOrder()));
+                                        }else{
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                            content: Text('Acepta el tratamiento de datos.',
+                                                style: GoogleFonts.poppins(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 18,
+                                                    color: colorsPalete['white'])),
+                                            backgroundColor:
+                                            colorsPalete['light brown'],
+                                          ));
+                                        }
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text('Coloca los datos del perfil.',
+                                              style: GoogleFonts.poppins(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 18,
+                                                  color: colorsPalete['white'])),
+                                          backgroundColor:
+                                          colorsPalete['light brown'],
+                                        ));
+                                      }
+                                    })))
+                      ]);
+                    }else{
+                      return Column(children: [
+                        Expanded(child: Container()),
+                        Center(
+                            child: Text('No hay productos',
+                                style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 17))),
+                        Expanded(child: Container())
+                      ]);
+                    }
+                  } else {
                 return Column(children: [
                   Expanded(child: Container()),
                   Center(
@@ -225,5 +249,82 @@ class HomeState extends State<Home> {
             }))
           ]))
     ]);
+  }
+
+  Future<void> errorGetHour(BuildContext context) async {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+            title: Text('Error',
+                style: GoogleFonts.nunito(
+                    color: colorsPalete['white'],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600)),
+            content: Container(
+                height: 80,
+                width: MediaQuery.of(context).size.width,
+                child: Text('No se pudo obtener la hora actual. Intenta nuevamente.',
+                    style: GoogleFonts.nunito(
+                        color: colorsPalete['white'],
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600
+                    ))
+            ),
+            backgroundColor: colorsPalete['dark brown'],
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cerrar',
+                      style: GoogleFonts.nunito(
+                          color: colorsPalete['white'],
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: colorsPalete['dark blue']))
+            ]
+        )
+    );
+  }
+
+  Future<void> restaurantTime(BuildContext context) async {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+            title: Text('Horarios',
+                style: GoogleFonts.nunito(
+                    color: colorsPalete['white'],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600)),
+            content: Container(
+                height: 70,
+                width: MediaQuery.of(context).size.width,
+                child: Text('Martes a domingo:\n'
+                    +'   10:00 a.m. - 10:00 p.m.',
+                    style: GoogleFonts.nunito(
+                        color: colorsPalete['white'],
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600
+                    ))
+            ),
+            backgroundColor: colorsPalete['dark brown'],
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cerrar',
+                      style: GoogleFonts.nunito(
+                          color: colorsPalete['white'],
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: colorsPalete['dark blue']))
+            ]
+        )
+    );
   }
 }

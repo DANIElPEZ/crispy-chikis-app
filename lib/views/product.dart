@@ -47,7 +47,7 @@ class _ProductState extends State<Product> {
             content: Container(
               height: 80,
               width: MediaQuery.of(context).size.width,
-              child: Text('Para dejar tu reseña puedes dejarla en el restaurante o enviarnos un correo.',
+              child: Text('Para dejar tu reseña puedes dejarla en el restaurante o enviarnos un correo a admincrispychikis@gmail.com.',
               style: GoogleFonts.nunito(
                 color: colorsPalete['white'],
                   fontSize: 18,

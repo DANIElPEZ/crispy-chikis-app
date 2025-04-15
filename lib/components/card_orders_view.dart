@@ -77,11 +77,23 @@ class CardOrderState extends State<CardOrder> {
                 child: Column(children: [
                   Row(
                       children: [
-                        Icon(Icons.functions, size: 29, color: colorsPalete['white']),
+                        Text('Cant.', style: GoogleFonts.nunito(
+                            color: colorsPalete['white'],
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600
+                        )),
                         SizedBox(width: 20),
-                        Icon(Icons.brunch_dining, size: 29, color: colorsPalete['white']),
+                        Text('Producto', style: GoogleFonts.nunito(
+                            color: colorsPalete['white'],
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600
+                        )),
                         Expanded(child: Container()),
-                        Icon(Icons.money, size: 29, color: colorsPalete['white'])
+                        Text('Precio', style: GoogleFonts.nunito(
+                            color: colorsPalete['white'],
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600
+                        )),
                       ]),
                   Container(height: 2, color: colorsPalete['white']),
                   Expanded(

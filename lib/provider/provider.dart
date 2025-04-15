@@ -6,6 +6,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:chispy_chikis/model/product_model.dart';
 import 'package:chispy_chikis/model/order_model.dart';
 import 'package:chispy_chikis/model/comment.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tzData;
 
 class crispyProvider extends ChangeNotifier {
   crispyProvider() {
@@ -63,6 +67,29 @@ class crispyProvider extends ChangeNotifier {
       getConnection = false;
     }
     notifyListeners();
+  }
+
+  Future<dynamic> getCurrentTime()async{
+    try{
+      final response=await http.get(Uri.parse('https://timeapi.io/api/Time/current/zone?timeZone=America/Bogota'));
+      if (response.statusCode==200){
+        final data=json.decode(response.body);
+        if(data==null) return null;
+        final day=data['dayOfWeek'];
+        final hour=data['hour'];
+
+        if(day=='Monday'){
+          return false;
+        }else{
+          return (hour>=10 && hour<19);
+        }
+      }else{
+        print('error code ${response.statusCode}');
+      }
+    }catch(e){
+      print('Error utc $e');
+    }
+    return false;
   }
 
   Future<void> fetchProducts() async {

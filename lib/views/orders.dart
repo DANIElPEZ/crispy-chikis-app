@@ -84,13 +84,7 @@ class OrdersState extends State<Orders> {
                               fontWeight: FontWeight.w700,
                               fontSize: 17,
                               color: colorsPalete['white']))),
-                  Expanded(child: Container()),
-                  CustomButton(
-                      text: 'Actualizar',
-                      onPressed: () {
-                        provider.fetchOrders();
-                      }),
-                  SizedBox(height: 20)
+                  Expanded(child: Container())
                 ]);
               }
             } else {

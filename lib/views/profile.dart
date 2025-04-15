@@ -140,7 +140,7 @@ class ProfileState extends State<Profile> {
                       bottom: 20,
                       child: Container(
                           color: colorsPalete['orange'],
-                          height: 87,
+                          height: 95,
                           width: MediaQuery.of(context).size.width)),
                   Positioned(
                       bottom: 20,
