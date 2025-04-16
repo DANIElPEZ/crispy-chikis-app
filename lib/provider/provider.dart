@@ -74,21 +74,23 @@ class crispyProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data == null) return null;
+
         final day = data['dayOfWeek'];
         final hour = data['hour'];
 
-        if (day == 'Monday') {
-          return false;
-        } else {
+        print(hour);
+
+        if (day == 'Monday') return false;
+
           return (hour >= 10 && hour < 19);
-        }
       } else {
         print('error code ${response.statusCode}');
+        return null;
       }
     } catch (e) {
       print('Error utc $e');
+      return null;
     }
-    return false;
   }
 
   Future<void> fetchProducts() async {

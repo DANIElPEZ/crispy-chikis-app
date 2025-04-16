@@ -170,12 +170,12 @@ class HomeState extends State<Home> {
                                     onPressed: () async{
                                       final isBetween=await provider.getCurrentTime();
 
+                                      print(isBetween);
+
                                       if(isBetween==null){
                                         errorGetHour(context);
                                         return;
                                       }
-
-                                      print(isBetween);
 
                                       if(!isBetween){
                                         restaurantTime(context);
