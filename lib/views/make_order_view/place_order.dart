@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:chispy_chikis/components/appbar.dart';
-import 'package:chispy_chikis/components/text_field.dart';
-import 'package:chispy_chikis/components/horizontal_scroll_place_order_view.dart';
+import 'package:crispychikis/components/appbar.dart';
+import 'package:crispychikis/components/text_field.dart';
+import 'package:crispychikis/components/horizontal_scroll_place_order_view.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:chispy_chikis/components/main_button.dart';
-import 'package:chispy_chikis/color/colors.dart';
-import 'package:chispy_chikis/views/make_order_view/see_order.dart';
+import 'package:crispychikis/components/main_button.dart';
+import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/views/make_order_view/see_order.dart';
 import 'package:provider/provider.dart';
-import 'package:chispy_chikis/provider/provider.dart';
+import 'package:crispychikis/provider/provider.dart';
 
 class PlaceOrder extends StatefulWidget {
   @override

@@ -1,14 +1,14 @@
-import 'package:chispy_chikis/provider/provider.dart';
-import 'package:chispy_chikis/views/home.dart';
+import 'package:crispychikis/provider/provider.dart';
+import 'package:crispychikis/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:chispy_chikis/color/colors.dart';
-import 'package:chispy_chikis/components/appbar.dart';
-import 'package:chispy_chikis/views/profile.dart';
-import 'package:chispy_chikis/views/orders.dart';
+import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/components/appbar.dart';
+import 'package:crispychikis/views/profile.dart';
+import 'package:crispychikis/views/orders.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

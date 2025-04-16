@@ -1,4 +1,4 @@
-import 'package:chispy_chikis/color/colors.dart';
+import 'package:crispychikis/color/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

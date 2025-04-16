@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:chispy_chikis/components/appbar.dart';
+import 'package:crispychikis/components/appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:chispy_chikis/components/main_button.dart';
-import 'package:chispy_chikis/color/colors.dart';
-import 'package:chispy_chikis/components/card_see_orders_view.dart';
-import 'package:chispy_chikis/views/make_order_view/confirm_order.dart';
+import 'package:crispychikis/components/main_button.dart';
+import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/components/card_see_orders_view.dart';
+import 'package:crispychikis/views/make_order_view/confirm_order.dart';
 import 'package:provider/provider.dart';
-import 'package:chispy_chikis/provider/provider.dart';
+import 'package:crispychikis/provider/provider.dart';
 
 class SeeOrder extends StatelessWidget {
   @override

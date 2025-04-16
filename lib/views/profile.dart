@@ -1,9 +1,9 @@
-import 'package:chispy_chikis/color/colors.dart';
+import 'package:crispychikis/color/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:chispy_chikis/components/main_button.dart';
-import 'package:chispy_chikis/components/text_field.dart';
-import 'package:chispy_chikis/provider/provider.dart';
+import 'package:crispychikis/components/main_button.dart';
+import 'package:crispychikis/components/text_field.dart';
+import 'package:crispychikis/provider/provider.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {

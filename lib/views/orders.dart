@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:chispy_chikis/color/colors.dart';
-import 'package:chispy_chikis/components/card_orders_view.dart';
-import 'package:chispy_chikis/components/filter_option_orders_view.dart';
+import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/components/card_orders_view.dart';
+import 'package:crispychikis/components/filter_option_orders_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:chispy_chikis/components/main_button.dart';
-import 'package:chispy_chikis/provider/provider.dart';
+import 'package:crispychikis/components/main_button.dart';
+import 'package:crispychikis/provider/provider.dart';
 
 class Orders extends StatefulWidget {
   @override

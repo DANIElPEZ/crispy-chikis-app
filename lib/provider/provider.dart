@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:chispy_chikis/database/sqlitehelper.dart';
+import 'package:crispychikis/database/sqlitehelper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:chispy_chikis/model/product_model.dart';
-import 'package:chispy_chikis/model/order_model.dart';
-import 'package:chispy_chikis/model/comment.dart';
+import 'package:crispychikis/model/product_model.dart';
+import 'package:crispychikis/model/order_model.dart';
+import 'package:crispychikis/model/comment.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tzData;
 
 class crispyProvider extends ChangeNotifier {
   crispyProvider() {
@@ -36,7 +34,7 @@ class crispyProvider extends ChangeNotifier {
   List user = [];
 
   //get comment by product
-  List comments=[];
+  List comments = [];
 
   //list tables
   Map<String, String> tables = {
@@ -69,24 +67,25 @@ class crispyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<dynamic> getCurrentTime()async{
-    try{
-      final response=await http.get(Uri.parse('https://timeapi.io/api/Time/current/zone?timeZone=America/Bogota'));
-      if (response.statusCode==200){
-        final data=json.decode(response.body);
-        if(data==null) return null;
-        final day=data['dayOfWeek'];
-        final hour=data['hour'];
+  Future<dynamic> getCurrentTime() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'https://timeapi.io/api/Time/current/zone?timeZone=America/Bogota'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data == null) return null;
+        final day = data['dayOfWeek'];
+        final hour = data['hour'];
 
-        if(day=='Monday'){
+        if (day == 'Monday') {
           return false;
-        }else{
-          return (hour>=10 && hour<19);
+        } else {
+          return (hour >= 10 && hour < 19);
         }
-      }else{
+      } else {
         print('error code ${response.statusCode}');
       }
-    }catch(e){
+    } catch (e) {
       print('Error utc $e');
     }
     return false;
@@ -148,19 +147,22 @@ class crispyProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     checkConnection();
-    try{
-      if(!getConnection){
-        comments=[];
+    try {
+      if (!getConnection) {
+        comments = [];
         return;
       }
-      final response=await Supabase.instance.client.from(tables['table5'].toString()).select('nombre_user, descripcion, puntuacion').eq('producto_id', id);
+      final response = await Supabase.instance.client
+          .from(tables['table5'].toString())
+          .select('nombre_user, descripcion, puntuacion')
+          .eq('producto_id', id);
 
-      comments=List<CommentModel>.from(
+      comments = List<CommentModel>.from(
           response.map((comment) => CommentModel.fromJSON(comment)));
-    }catch(e){
-      comments=[];
+    } catch (e) {
+      comments = [];
     }
-    isLoading=false;
+    isLoading = false;
     notifyListeners();
   }
 
@@ -192,9 +194,11 @@ class crispyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> makeOrder(String direccion, String metodoPago) async {
+  Future<bool> makeOrder(
+      String direccion, String metodoPago, String aditional_description) async {
     try {
-      if (!getConnection || direccion.isEmpty) return false;
+      if (!getConnection || direccion.isEmpty || aditional_description.isEmpty)
+        return false;
 
       final productosPedido = [];
 
@@ -208,7 +212,8 @@ class crispyProvider extends ChangeNotifier {
         'direccion': direccion,
         'precio_total': total,
         'fecha_creacion_pedido': DateTime.now().toString(),
-        'estado': 1
+        'estado': 1,
+        'descripcion_adicional': aditional_description
       };
 
       final response = await Supabase.instance.client
@@ -220,7 +225,54 @@ class crispyProvider extends ChangeNotifier {
         'metodo': metodoPago == 'Efectivo' ? 1 : 2
       });
 
-      myProducts=[];
+      myProducts = [];
+      notifyListeners();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> makeOrderCard(
+      String direccion,
+      String metodoPago,
+      String aditional_description,
+      String numero_tarjeta,
+      String fecha_vencimiento,
+      String cvv) async {
+    try {
+      if (!getConnection || direccion.isEmpty || aditional_description.isEmpty)
+        return false;
+
+      final productosPedido = [];
+
+      for (int i = 0; i < myProducts.length; i++) {
+        productosPedido.add(myProducts[i][0]);
+      }
+
+      //peticion de pago implementar
+
+
+      final Map<String, dynamic> order = {
+        'usuario_id': user[0]['usuario_id'],
+        'productos': productosPedido,
+        'direccion': direccion,
+        'precio_total': total,
+        'fecha_creacion_pedido': DateTime.now().toString(),
+        'estado': 1,
+        'descripcion_adicional': aditional_description
+      };
+
+      final response = await Supabase.instance.client
+          .from(tables['table3'].toString())
+          .insert(order)
+          .select();
+      await Supabase.instance.client.from(tables['table4'].toString()).insert({
+        'orden_id': response.first['orden_id'],
+        'metodo': metodoPago == 'Efectivo' ? 1 : 2
+      });
+
+      myProducts = [];
       notifyListeners();
       return true;
     } catch (e) {

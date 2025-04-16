@@ -8,3 +8,5 @@ GeneratedPluginRegistrant.java
 /app/src/debug
 /app/src/profile
 /app/src/main/java
+app/key.jks
+key.properties

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:chispy_chikis/components/card_home_view.dart';
-import 'package:chispy_chikis/color/colors.dart';
+import 'package:crispychikis/components/card_home_view.dart';
+import 'package:crispychikis/color/colors.dart';
 
 class HorizontalScrollHome extends StatelessWidget {
   HorizontalScrollHome({required this.title, required this.elements});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:chispy_chikis/shape/app_bar_shape.dart';
+import 'package:crispychikis/shape/app_bar_shape.dart';
 
 class CustomAppBar extends StatelessWidget{
   CustomAppBar({required this.bg_color, required this.shape_color});

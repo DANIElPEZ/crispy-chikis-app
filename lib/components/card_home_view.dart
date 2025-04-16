@@ -1,9 +1,9 @@
-import 'package:chispy_chikis/color/colors.dart';
+import 'package:crispychikis/color/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:chispy_chikis/views/product.dart';
+import 'package:crispychikis/views/product.dart';
 import 'package:provider/provider.dart';
-import 'package:chispy_chikis/provider/provider.dart';
+import 'package:crispychikis/provider/provider.dart';
 
 class CardHome extends StatelessWidget{
   CardHome({
