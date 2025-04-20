@@ -126,7 +126,9 @@ class ProfileState extends State<Profile> {
                 return Stack(children: [
                   SingleChildScrollView(
                       physics: BouncingScrollPhysics(),
-                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min, children: [
                         CustomTextField(
                             controller: nameController, labelText: 'Nombre'),
                         SizedBox(height: 10),
@@ -135,7 +137,14 @@ class ProfileState extends State<Profile> {
                         SizedBox(height: 10),
                         CustomTextField(
                             controller: phoneController, labelText: 'Telefono'),
-                        SizedBox(height: 20),
+                        SizedBox(height: 15),
+                        Text('Leer antes de usar la app',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 17,
+                          color: colorsPalete['white']
+                        )),
+                        SizedBox(height: 5),
                         CustomButton(text: 'Politicas', onPressed: (){
                           Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>Policities()));
                         }),
