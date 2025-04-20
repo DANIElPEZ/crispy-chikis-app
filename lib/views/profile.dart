@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:crispychikis/components/main_button.dart';
 import 'package:crispychikis/components/text_field.dart';
 import 'package:crispychikis/provider/provider.dart';
+import 'package:crispychikis/views/policities.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
@@ -134,6 +135,10 @@ class ProfileState extends State<Profile> {
                         SizedBox(height: 10),
                         CustomTextField(
                             controller: phoneController, labelText: 'Telefono'),
+                        SizedBox(height: 20),
+                        CustomButton(text: 'Politicas', onPressed: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>Policities()));
+                        }),
                         SizedBox(height: 280)
                       ])),
                   Positioned(

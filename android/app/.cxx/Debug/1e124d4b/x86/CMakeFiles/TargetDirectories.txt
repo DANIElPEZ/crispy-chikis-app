@@ -1,0 +1,2 @@
+C:/Users/DANIEL.LAPTOP-MLE1T6PG/Documents/programacion/proyectos/crispy_chikis/android/app/.cxx/Debug/1e124d4b/x86/CMakeFiles/edit_cache.dir
+C:/Users/DANIEL.LAPTOP-MLE1T6PG/Documents/programacion/proyectos/crispy_chikis/android/app/.cxx/Debug/1e124d4b/x86/CMakeFiles/rebuild_cache.dir
