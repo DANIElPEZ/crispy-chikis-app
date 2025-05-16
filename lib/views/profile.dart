@@ -130,13 +130,16 @@ class ProfileState extends State<Profile> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min, children: [
                         CustomTextField(
-                            controller: nameController, labelText: 'Nombre'),
+                            controller: nameController, labelText: 'Nombre',
+                        placeHolder: 'Juan Diego'),
                         SizedBox(height: 10),
                         CustomTextField(
-                            controller: emailController, labelText: 'Correo'),
+                            controller: emailController, labelText: 'Correo',
+                        placeHolder: 'juan@gmail.com'),
                         SizedBox(height: 10),
                         CustomTextField(
-                            controller: phoneController, labelText: 'Telefono'),
+                            controller: phoneController, labelText: 'Telefono',
+                        placeHolder: '3112345678'),
                         SizedBox(height: 15),
                         Text('Leer antes de usar la app',
                         style: GoogleFonts.poppins(

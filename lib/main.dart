@@ -51,8 +51,8 @@ class MainViewState extends State<MainView> {
     await crispy_provider.checkConnection();
     await Future.delayed(Duration(microseconds: 900));
     await crispy_provider.fetchProducts();
-    await crispy_provider.fetchOrders();
     await crispy_provider.loadUser();
+    await crispy_provider.fetchOrders();
   }
 
   @override

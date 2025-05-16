@@ -47,7 +47,21 @@ class SeeOrder extends StatelessWidget {
                                 style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 17,
-                                    color: colorsPalete['white'])))
+                                    color: colorsPalete['white']))),
+                        Positioned(
+                            bottom: 20,
+                            left: 0,
+                            child: FloatingActionButton.extended(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                backgroundColor: colorsPalete['dark brown'],
+                                icon: Icon(Icons.arrow_back, color: colorsPalete['pink']),
+                                label: Text('Regresar',
+                                    style: GoogleFonts.nunito(
+                                        color: colorsPalete['pink'],
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700))))
                       ]);
                     } else {
                       return Stack(children: [

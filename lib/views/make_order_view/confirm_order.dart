@@ -21,7 +21,7 @@ class ConfirmOrderState extends State<ConfirmOrder> {
   TextEditingController cardDateController = TextEditingController();
   TextEditingController cardCvvController = TextEditingController();
 
-  List<String> paymentMethods = ['Efectivo', 'Tarjeta'
+  List<String> paymentMethods = ['Efectivo', //'Tarjeta'
   ];
   String dropDownValue = 'Efectivo';
 
@@ -128,15 +128,18 @@ class ConfirmOrderState extends State<ConfirmOrder> {
                 children: [
                   CustomTextField(
                       labelText: 'Numero de tarjeta',
-                      controller: cardNumberController),
+                      controller: cardNumberController,
+                  placeHolder: '01234567891235'),
                   SizedBox(height: 5),
                   CustomTextField(
                       labelText: 'Fecha de vencimiento',
-                      controller: cardDateController),
+                      controller: cardDateController,
+                  placeHolder: '06/25'),
                   SizedBox(height: 5),
                   CustomTextField(
                       labelText: 'CVC',
-                      controller: cardCvvController)
+                      controller: cardCvvController,
+                  placeHolder: '123')
                 ]),
           ),
         ),
@@ -185,11 +188,13 @@ class ConfirmOrderState extends State<ConfirmOrder> {
                         children: [
                           CustomTextField(
                               controller: directionController,
-                              labelText: 'Direccion'),
+                              labelText: 'Direccion',
+                          placeHolder: 'Calle 12 av 12 #12-34'),
                           SizedBox(height: 10),
                           CustomTextField(
                               controller: descriptionController,
-                              labelText: 'Descripcion adicional'),
+                              labelText: 'Descripcion adicional',
+                          placeHolder: 'Sabor de gaseosa, salsas, etc'),
                           SizedBox(height: 10),
                           Text('Metodo de pago',
                               style: GoogleFonts.poppins(

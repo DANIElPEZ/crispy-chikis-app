@@ -110,7 +110,8 @@ class HomeState extends State<Home> {
                                         fontWeight: FontWeight.w700)))
                           ]),
                       CustomTextField(
-                          controller: searchController, labelText: ''),
+                          controller: searchController, labelText: '',
+                      placeHolder: 'Buscar producto'),
                       SizedBox(height: 25),
                       Text('Menu de productos (desliza)',
                           style: GoogleFonts.poppins(

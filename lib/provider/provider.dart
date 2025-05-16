@@ -286,10 +286,10 @@ class crispyProvider extends ChangeNotifier {
     for (int i = 0; i < myProducts.length; i++) {
       if (myProducts[i][0] == id) {
         myProducts.removeAt(i);
+        notifyListeners();
         break;
       }
     }
-    notifyListeners();
   }
 
   Future<void> calculateTotal() async {

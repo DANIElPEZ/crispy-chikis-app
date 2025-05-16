@@ -79,7 +79,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomTextField(
-                              controller: searchController, labelText: ''),
+                              controller: searchController, labelText: '',
+                          placeHolder: 'Buscar producto'),
                           SizedBox(height: 25),
                           Text('Menu de productos (desliza)',
                               style: GoogleFonts.poppins(
