@@ -70,19 +70,17 @@ class crispyProvider extends ChangeNotifier {
   Future<dynamic> getCurrentTime() async {
     try {
       final response = await http.get(Uri.parse(
-          'https://timeapi.io/api/Time/current/zone?timeZone=America/Bogota'));
+        'https://time-pi-eight.vercel.app/api/date'
+      ));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data == null) return null;
 
-        final day = data['dayOfWeek'];
+        final day = data['day'];
         final hour = data['hour'];
 
-        print(hour);
-
         if (day == 'Monday') return false;
-
-          return (hour >= 10 && hour < 19);
+        return (hour >= 10 && hour < 22);
       } else {
         print('error code ${response.statusCode}');
         return null;
@@ -180,7 +178,7 @@ class crispyProvider extends ChangeNotifier {
       final response = await Supabase.instance.client
           .from(tables['table3'].toString())
           .select('productos, fecha_creacion_pedido, estado')
-          .eq('usuario_id', user[0]['usuario_id']);
+          .eq('usuario_id', user[0]['usuario_id']).order('fecha_creacion_pedido', ascending: false);
 
       orders = List<OrderModel>.from(
           response.map((order) => OrderModel.fromJSON(order)));

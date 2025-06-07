@@ -19,7 +19,7 @@ class DatabaseHelper {
             usuario_id INTEGER PRIMARY KEY,
             nombre TEXT,
             email TEXT,
-            telefono INTEGER,
+            telefono TEXT,
             acepto INTEGER
           );
           ''');

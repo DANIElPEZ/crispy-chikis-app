@@ -38,6 +38,16 @@ class ConfirmOrderState extends State<ConfirmOrder> {
     final String metodoPago = dropDownValue;
     final provider = Provider.of<crispyProvider>(context, listen: false);
     final bool? isMaked;
+    final isBetween =await provider.getCurrentTime();
+    if (isBetween == null) {
+      isMaked=false;
+      return isMaked;
+    }
+
+    if (!isBetween) {
+      isMaked=false;
+      return isMaked;
+    }
     if (metodoPago == 'Efectivo') {
       isMaked = await provider.makeOrder(
           direccion, metodoPago, aditional_description);

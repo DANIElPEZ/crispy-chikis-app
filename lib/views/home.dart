@@ -161,8 +161,6 @@ class HomeState extends State<Home> {
                                   final isBetween =
                                       await provider.getCurrentTime();
 
-                                  print(isBetween);
-
                                   if (isBetween == null) {
                                     errorGetHour(context);
                                     return;

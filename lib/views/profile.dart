@@ -75,14 +75,13 @@ class ProfileState extends State<Profile> {
       return "";
     }
 
-    final RegExp regex =
-        RegExp(r"^[a-zA-Z0-9._%+-]+@(gmail\.com|hotmail\.com)$");
+    final RegExp regex = RegExp(r"^[a-zA-Z0-9._%+-]+@(gmail\.com|hotmail\.com)$");
 
     return regex.hasMatch(email) ? email : "";
   }
 
   String sanitizePhone(String phone) {
-    final RegExp regex = RegExp(r'^\d{10}$');
+    final RegExp regex = RegExp(r'^\+\d{3}\s\d{10}$');
     return regex.hasMatch(phone) ? phone : "";
   }
 
@@ -139,7 +138,7 @@ class ProfileState extends State<Profile> {
                         SizedBox(height: 10),
                         CustomTextField(
                             controller: phoneController, labelText: 'Telefono',
-                        placeHolder: '3112345678'),
+                        placeHolder: '+57 3112345678'),
                         SizedBox(height: 15),
                         Text('Leer antes de usar la app',
                         style: GoogleFonts.poppins(
