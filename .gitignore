@@ -2,6 +2,7 @@
 .idea/
 build/
 test/
+android/build.gradle
 .env
 .flutter-plugins
 .flutter-plugins-dependencies

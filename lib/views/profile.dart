@@ -6,6 +6,7 @@ import 'package:crispychikis/components/text_field.dart';
 import 'package:crispychikis/provider/provider.dart';
 import 'package:crispychikis/views/policities.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -43,13 +44,15 @@ class ProfileState extends State<Profile> {
   Future<void> saveUser(String name, String email, String phone) async {
     final provider = Provider.of<crispyProvider>(context, listen: false);
 
-    final bool isSave = await provider.insertOrUpdateUser({
+    final Map<String, dynamic> user = {
       'nombre': name.trim(),
       'email': email.trim(),
       'telefono': phone.trim(),
       'acepto': isChecked ? 1 : 2,
       'tipo_usuario': 2
-    });
+    };
+
+    final bool isSave = await provider.insertOrUpdateUser(user);
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(isSave ? 'Perfil guardado.' : 'Perfil no guardado.',
@@ -81,7 +84,7 @@ class ProfileState extends State<Profile> {
   }
 
   String sanitizePhone(String phone) {
-    final RegExp regex = RegExp(r'^\+\d{3}\s\d{10}$');
+    final RegExp regex = RegExp(r'^\+\d{1,3}\s\d{10}$');
     return regex.hasMatch(phone) ? phone : "";
   }
 
@@ -130,11 +133,11 @@ class ProfileState extends State<Profile> {
                           mainAxisSize: MainAxisSize.min, children: [
                         CustomTextField(
                             controller: nameController, labelText: 'Nombre',
-                        placeHolder: 'Juan Diego'),
+                        placeHolder: 'Rodolfo Ramirez'),
                         SizedBox(height: 10),
                         CustomTextField(
                             controller: emailController, labelText: 'Correo',
-                        placeHolder: 'juan@gmail.com'),
+                        placeHolder: 'rodolfo.ramirez@gmail.com'),
                         SizedBox(height: 10),
                         CustomTextField(
                             controller: phoneController, labelText: 'Telefono',
@@ -150,47 +153,72 @@ class ProfileState extends State<Profile> {
                         CustomButton(text: 'Politicas', onPressed: (){
                           Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>Policities()));
                         }),
-                        SizedBox(height: 280)
+                        provider.user.isNotEmpty?
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 10),
+                            Text('Eliminar perfil',
+                                style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 17,
+                                    color: colorsPalete['white']
+                                )),
+                            SizedBox(height: 5),
+                            CustomButton(text: 'Solicitar eliminación', onPressed: () async{
+                              final url = Uri.parse('https://pages-ten-mu.vercel.app');
+
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url, mode: LaunchMode.externalApplication); // Abre en navegador externo
+                              } else {
+                                throw 'No se pudo abrir el enlace: $url';
+                              }
+                            }),
+                          ],
+                        ): Container(),
+                        SizedBox(height: 250)
                       ])),
-                  Positioned(
-                      bottom: 20,
-                      child: Container(
-                          color: colorsPalete['orange'],
-                          height: 95,
-                          width: MediaQuery.of(context).size.width)),
                   Positioned(
                       bottom: 20,
                       left: 0,
                       right: 0,
-                      child: Column(children: [
-                        Row(children: [
-                          Checkbox(
-                              value: isChecked,
-                              onChanged: (newValue) {
-                                setState(() => isChecked = newValue!);
-                              },
-                              activeColor: colorsPalete['dark blue']),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() => isChecked = !isChecked);
-                            },
-                            child: Text(
-                                'Acepto tratamiento de datos personales.',
-                                style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 13,
-                                    color: colorsPalete['white'])),
-                          )
-                        ]),
-                        CustomButton(
-                            text: 'GUARDAR PERFIL',
-                            onPressed: () async {
-                              final name = sanitizeName(nameController.text);
-                              final email = sanitizeEmail(emailController.text);
-                              final phone = sanitizePhone(phoneController.text);
-                              await saveUser(name, email, phone);
-                            })
-                      ]))
+                      child: Stack(
+                        children: [
+                          Container(
+                              color: colorsPalete['orange'],
+                              height: 95,
+                              width: MediaQuery.of(context).size.width),
+                          Column(children: [
+                            Row(children: [
+                              Checkbox(
+                                  value: isChecked,
+                                  onChanged: (newValue) {
+                                    setState(() => isChecked = newValue!);
+                                  },
+                                  activeColor: colorsPalete['dark blue']),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() => isChecked = !isChecked);
+                                },
+                                child: Text(
+                                    'Acepto tratamiento de datos personales.',
+                                    style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 13,
+                                        color: colorsPalete['white'])),
+                              )
+                            ]),
+                            CustomButton(
+                                text: 'GUARDAR PERFIL',
+                                onPressed: () async {
+                                  final name = sanitizeName(nameController.text);
+                                  final email = sanitizeEmail(emailController.text);
+                                  final phone = sanitizePhone(phoneController.text);
+                                  await saveUser(name, email, phone);
+                                })
+                          ]),
+                        ],
+                      ))
                 ]);
               } else {
                 return Column(children: [

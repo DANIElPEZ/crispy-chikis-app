@@ -212,7 +212,8 @@ class HomeState extends State<Home> {
                     Center(
                         child: Text('No hay productos',
                             style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w700, fontSize: 17))),
+                                fontWeight: FontWeight.w700, fontSize: 17,
+                            color: colorsPalete['white']))),
                     Expanded(child: Container())
                   ]);
                 }

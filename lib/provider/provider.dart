@@ -301,6 +301,9 @@ class crispyProvider extends ChangeNotifier {
   }
 
   Future<bool> insertOrUpdateUser(Map<String, dynamic> user) async {
+    print(user);
+    if (user['nombre'].isEmpty || user['email'].isEmpty || user['telefono'].isEmpty) return false;
+
     final ifUserExist = await Supabase.instance.client
         .from(tables['table2'].toString())
         .select('usuario_id, nombre, email, telefono, acepto')
