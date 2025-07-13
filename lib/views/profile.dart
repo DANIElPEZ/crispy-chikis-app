@@ -166,7 +166,7 @@ class ProfileState extends State<Profile> {
                                 )),
                             SizedBox(height: 5),
                             CustomButton(text: 'Solicitar eliminación', onPressed: () async{
-                              final url = Uri.parse('https://pages-ten-mu.vercel.app');
+                              final url = Uri.parse('https://delete-account-crispy-chikis.vercel.app');
 
                               if (await canLaunchUrl(url)) {
                                 await launchUrl(url, mode: LaunchMode.externalApplication); // Abre en navegador externo

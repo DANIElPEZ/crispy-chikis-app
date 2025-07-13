@@ -70,7 +70,7 @@ class crispyProvider extends ChangeNotifier {
   Future<dynamic> getCurrentTime() async {
     try {
       final response = await http.get(Uri.parse(
-        'https://time-pi-eight.vercel.app/api/date'
+        'https://api-time-crispy-chikis.vercel.app/api/date'
       ));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
