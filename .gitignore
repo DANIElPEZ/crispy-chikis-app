@@ -2,12 +2,12 @@
 .idea/
 build/
 test/
-android/build.gradle
+android/build.gradle.kts
 .env
 .flutter-plugins
 .flutter-plugins-dependencies
 .metadata
 analysis_options.yaml
-crispy_chikis.iml
+crispychikis.iml
 pubspec.lock
 devtools_options.yaml

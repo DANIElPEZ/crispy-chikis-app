@@ -4,8 +4,9 @@ app/.cxx/
 app/src/debug
 app/src/profile
 app/src/main/java
+app/src/main/kotlin
 gradle/
-settings.gradle
+settings.gradle.kts
 *.properties
 gradlew
 *.bat
