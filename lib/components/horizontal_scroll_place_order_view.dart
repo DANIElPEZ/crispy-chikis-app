@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:crispychikis/components/card_place_order_view.dart';
-import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/theme/color/colors.dart';
 
 class HorizontalScrollPlaceOrder extends StatelessWidget {
   HorizontalScrollPlaceOrder({required this.title, required this.elements});

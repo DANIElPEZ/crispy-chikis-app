@@ -1,8 +1,9 @@
-import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/theme/color/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:crispychikis/provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:crispychikis/blocs/make_order/make_order_bloc.dart';
+import 'package:crispychikis/blocs/make_order/make_order_event.dart';
 
 class CardPlaceOrder extends StatefulWidget {
   CardPlaceOrder(
@@ -41,13 +42,12 @@ class _CardPlaceOrderState extends State<CardPlaceOrder>
   void toggleAdded() async {
     setState(() => isAdded = true);
     controller.forward(from: 0.5);
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(milliseconds: 400));
     setState(() => isAdded = false);
   }
 
   Future<void> addProducts(int id, String title, double price) async{
-    final provider=Provider.of<crispyProvider>(context, listen: false);
-    await provider.addProducts(id, title, price);
+    context.read<MakeOrderBloc>().add(AddProduct(id: id, price: price, title: title));
   }
 
   @override
@@ -69,30 +69,30 @@ class _CardPlaceOrderState extends State<CardPlaceOrder>
                   Container(
                       padding:
                           EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                      child: Column(children: [
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                         Image.network(widget.image,
                             height: 90, fit: BoxFit.cover),
-                        Expanded(child: Container()),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                  constraints: BoxConstraints(maxWidth: 70),
-                                  child: Text(widget.title,
-                                      softWrap: true,
-                                      maxLines: 2,
-                                      style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 13,
-                                          color: colorsPalete['white']))),
-                              Expanded(child: Container()),
-                              Text('\$ ${widget.price}',
-                                  style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 13,
-                                      color: colorsPalete['white']))
-                            ]),
-                        Expanded(child: Container())
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(widget.title,
+                                    softWrap: true,
+                                    maxLines: 2,
+                                    style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 13,
+                                        color: colorsPalete['white'])),
+                                Text('\$ ${widget.price}',
+                                    style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 13,
+                                        color: colorsPalete['white']))
+                              ]),
+                        )
                       ])),
                   Container(
                       decoration: BoxDecoration(

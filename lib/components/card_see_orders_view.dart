@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:crispychikis/color/colors.dart';
-import 'package:crispychikis/provider/provider.dart';
-import 'package:provider/provider.dart';
+import 'package:crispychikis/theme/color/colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:crispychikis/blocs/make_order/make_order_bloc.dart';
+import 'package:crispychikis/blocs/make_order/make_order_event.dart';
+import 'package:crispychikis/blocs/make_order/make_order_state.dart';
 
 class CardSeeOrder extends StatefulWidget {
   CardSeeOrder({required this.id, required this.product});
@@ -17,8 +19,7 @@ class CardSeeOrder extends StatefulWidget {
 class CardSeeOrderState extends State<CardSeeOrder> {
 
   Future<void> deleteProduct(int id) async{
-    final provider=Provider.of<crispyProvider>(context, listen: false);
-    await provider.deleteProduct(id);
+    context.read<MakeOrderBloc>().add(DeleteProduct(id: id));
   }
 
   @override

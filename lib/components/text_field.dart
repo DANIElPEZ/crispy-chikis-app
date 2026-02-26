@@ -1,4 +1,4 @@
-import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/theme/color/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -7,12 +7,14 @@ class CustomTextField extends StatelessWidget {
   final String labelText;
   final String placeHolder;
   final ValueChanged<String>? onChanged;
+  final bool isPassword;
 
   CustomTextField({
     required this.controller,
     required this.labelText,
     this.onChanged,
-    required this.placeHolder
+    required this.placeHolder,
+    this.isPassword=false
   });
 
   @override
@@ -33,6 +35,8 @@ class CustomTextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(12)
           ),
           child: TextField(
+            enableSuggestions: !isPassword,
+            obscureText: isPassword,
             cursorColor: colorsPalete['dark brown'],
             controller: controller,
             style: GoogleFonts.nunito(

@@ -1,91 +1,112 @@
-import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/theme/color/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:crispychikis/components/main_button.dart';
 import 'package:crispychikis/components/text_field.dart';
-import 'package:crispychikis/provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:crispychikis/blocs/profile/profile_bloc.dart';
+import 'package:crispychikis/blocs/profile/profile_state.dart';
+import 'package:crispychikis/blocs/profile/profile_event.dart';
 import 'package:crispychikis/views/policities.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:crispychikis/components/snack_bar_message.dart';
 
 class Profile extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => ProfileState();
+  State<StatefulWidget> createState() => _ProfileState();
 }
 
-class ProfileState extends State<Profile> {
-  bool isChecked = false;
+class _ProfileState extends State<Profile> {
   TextEditingController nameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-
-  final defaultText = {'nombre': '', 'email': '', 'telefono': '', 'acepto': 2};
+  bool isChecked = false;
 
   @override
   void initState() {
     super.initState();
-    final provider = Provider.of<crispyProvider>(context, listen: false);
-    final userData = provider.user.isNotEmpty ? provider.user[0] : defaultText;
-
-    nameController.text = userData['nombre'];
-    emailController.text = userData['email'];
-    phoneController.text = userData['telefono'].toString();
-    isChecked = userData['acepto'] == 1;
+    context.read<ProfileBloc>().add(loadUser());
   }
 
   @override
   void dispose() {
     super.dispose();
     nameController.dispose();
+    passwordController.dispose();
     emailController.dispose();
     phoneController.dispose();
   }
 
-  Future<void> saveUser(String name, String email, String phone) async {
-    final provider = Provider.of<crispyProvider>(context, listen: false);
-
-    final Map<String, dynamic> user = {
-      'nombre': name.trim(),
-      'email': email.trim(),
-      'telefono': phone.trim(),
-      'acepto': isChecked ? 1 : 2,
-      'tipo_usuario': 2
-    };
-
-    final bool isSave = await provider.insertOrUpdateUser(user);
-
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(isSave ? 'Perfil guardado.' : 'Perfil no guardado.',
-            style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-                fontSize: 18,
-                color: colorsPalete['white'])),
-        backgroundColor: colorsPalete['light brown']));
-    provider.loadUser();
-  }
-
-  String sanitizeName(String name) {
-    name = name.trim();
-    final RegExp regex = RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$');
-    return regex.hasMatch(name) ? name : "";
-  }
-
-  String sanitizeEmail(String email) {
-    email = email.trim();
-    final RegExp forbiddenChars = RegExp(r'''[<>\"'`;=]''');
-
-    if (forbiddenChars.hasMatch(email)) {
-      return "";
-    }
-
-    final RegExp regex = RegExp(r"^[a-zA-Z0-9._%+-]+@(gmail\.com|hotmail\.com)$");
-
-    return regex.hasMatch(email) ? email : "";
-  }
-
-  String sanitizePhone(String phone) {
-    final RegExp regex = RegExp(r'^\+\d{1,3}\s\d{10}$');
-    return regex.hasMatch(phone) ? phone : "";
+  Future<void> updatePasswordModal(BuildContext context) async {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder:
+            (context) => AlertDialog(
+          backgroundColor: colorsPalete['dark brown'],
+          title: Text(
+            'Actualizar contraseña',
+            style: GoogleFonts.nunito(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              color: colorsPalete['white'],
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomTextField(
+                    controller: passwordController,
+                    labelText: 'Contraseña',
+                    placeHolder: '******',
+                    isPassword: true),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: colorsPalete['dark blue'],
+              ),
+              child: Text(
+                'Cerrar',
+                style: GoogleFonts.nunito(
+                  color: colorsPalete['white'],
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                context.read<ProfileBloc>().add(
+                    updatePassword(
+                        passwordController.text));
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: colorsPalete['dark blue'],
+              ),
+              child: Text(
+                'Actualizar',
+                style: GoogleFonts.nunito(
+                  color: colorsPalete['white'],
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
   }
 
   @override
@@ -121,124 +142,211 @@ class ProfileState extends State<Profile> {
                     borderRadius: BorderRadius.circular(12),
                     child: Image.asset('assets/logo.jpeg', width: 150))),
             SizedBox(height: 20),
-            Expanded(child:
-                Consumer<crispyProvider>(builder: (context, provider, child) {
-              provider.checkConnection();
-              if (provider.getConnection) {
-                return Stack(children: [
-                  SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min, children: [
-                        CustomTextField(
-                            controller: nameController, labelText: 'Nombre',
-                        placeHolder: 'Rodolfo Ramirez'),
-                        SizedBox(height: 10),
-                        CustomTextField(
-                            controller: emailController, labelText: 'Correo',
-                        placeHolder: 'rodolfo.ramirez@gmail.com'),
-                        SizedBox(height: 10),
-                        CustomTextField(
-                            controller: phoneController, labelText: 'Telefono',
-                        placeHolder: '+57 3112345678'),
-                        SizedBox(height: 15),
-                        Text('Leer antes de usar la app',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 17,
-                          color: colorsPalete['white']
-                        )),
-                        SizedBox(height: 5),
-                        CustomButton(text: 'Politicas', onPressed: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>Policities()));
-                        }),
-                        provider.user.isNotEmpty?
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 10),
-                            Text('Eliminar perfil',
-                                style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 17,
-                                    color: colorsPalete['white']
-                                )),
-                            SizedBox(height: 5),
-                            CustomButton(text: 'Solicitar eliminación', onPressed: () async{
-                              final url = Uri.parse('https://delete-account-crispy-chikis.vercel.app');
-
-                              if (await canLaunchUrl(url)) {
-                                await launchUrl(url, mode: LaunchMode.externalApplication); // Abre en navegador externo
-                              } else {
-                                throw 'No se pudo abrir el enlace: $url';
-                              }
-                            }),
-                          ],
-                        ): Container(),
-                        SizedBox(height: 250)
-                      ])),
-                  Positioned(
-                      bottom: 20,
-                      left: 0,
-                      right: 0,
-                      child: Stack(
-                        children: [
-                          Container(
-                              color: colorsPalete['orange'],
-                              height: 95,
-                              width: MediaQuery.of(context).size.width),
-                          Column(children: [
-                            Row(children: [
-                              Checkbox(
-                                  value: isChecked,
-                                  onChanged: (newValue) {
-                                    setState(() => isChecked = newValue!);
-                                  },
-                                  activeColor: colorsPalete['dark blue']),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() => isChecked = !isChecked);
-                                },
-                                child: Text(
-                                    'Acepto tratamiento de datos personales.',
+            Expanded(
+                child: BlocConsumer<ProfileBloc, ProfileState>(
+                    listenWhen: (prev, curr) =>
+                        prev.name != curr.name || prev.email != curr.email,
+                    listener: (context, state) {
+                      if (state.name.isNotEmpty) {
+                        nameController.text = state.name;
+                        emailController.text = state.email;
+                        phoneController.text = state.phone;
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state.name.isNotEmpty &&
+                          state.email.isNotEmpty &&
+                          state.phone.isNotEmpty) {
+                        return SingleChildScrollView(
+                          key: ValueKey(1),
+                          physics: BouncingScrollPhysics(),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CustomTextField(
+                                    controller: nameController,
+                                    labelText: 'Nombre',
+                                    placeHolder: 'Juan Garcia'),
+                                SizedBox(height: 10),
+                                CustomTextField(
+                                    controller: emailController,
+                                    labelText: 'Correo',
+                                    placeHolder: 'juan.g@gmail.com'),
+                                SizedBox(height: 10),
+                                CustomTextField(
+                                    controller: phoneController,
+                                    labelText: 'Telefono',
+                                    placeHolder: '+57 3112345678'),
+                                SizedBox(height: 10),
+                                CustomButton(
+                                    text: 'Actualizar usuario',
+                                    onPressed: () {
+                                      context.read<ProfileBloc>().add(
+                                          updateUser(
+                                              nameController.text,
+                                              emailController.text,
+                                              phoneController.text));
+                                      snackBarMessage(
+                                          ScaffoldMessenger.of(context), 'Usuario actualizado.');
+                                    }),
+                                SizedBox(height: 15),
+                                CustomButton(
+                                    text: 'Actualizar contraseña',
+                                    onPressed: () {
+                                      updatePasswordModal(context);
+                                    }),
+                                SizedBox(height: 15),
+                                CustomButton(
+                                    text: 'Politicas',
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  Policities()));
+                                    }),
+                                SizedBox(height: 15),
+                                CustomButton(
+                                    text: 'Cerrar sesion',
+                                    onPressed: () {
+                                      context.read<ProfileBloc>().add(logOut());
+                                    }),
+                                Text(state.message,
                                     style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 13,
-                                        color: colorsPalete['white'])),
-                              )
+                                        fontSize: 20,
+                                        color: colorsPalete['white']))
+                              ]),
+                        );
+                      }
+
+                      if (state.isRegister) {
+                        return SingleChildScrollView(
+                          key: ValueKey(2),
+                          physics: BouncingScrollPhysics(),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CustomTextField(
+                                    controller: nameController,
+                                    labelText: 'Nombre',
+                                    placeHolder: 'Juan Garcia'),
+                                SizedBox(height: 10),
+                                CustomTextField(
+                                    controller: emailController,
+                                    labelText: 'Correo',
+                                    placeHolder: 'juan.g@gmail.com'),
+                                SizedBox(height: 10),
+                                CustomTextField(
+                                    controller: phoneController,
+                                    labelText: 'Telefono',
+                                    placeHolder: '+57 3112345678'),
+                                SizedBox(height: 10),
+                                CustomTextField(
+                                    controller: passwordController,
+                                    labelText: 'Contraseña',
+                                    placeHolder: '******',
+                                    isPassword: true),
+                                SizedBox(height: 10),
+                                Row(children: [
+                                  Checkbox(
+                                      value: isChecked,
+                                      onChanged: (newValue) {
+                                        setState(() => isChecked = newValue!);
+                                      },
+                                      activeColor: colorsPalete['dark blue']),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  Policities()));
+                                    },
+                                    child: Text('Acepto las politicas.',
+                                        style: GoogleFonts.poppins(
+                                            textStyle: TextStyle(
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                decorationColor: Colors.white),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 20,
+                                            color: colorsPalete['white'])),
+                                  )
+                                ]),
+                                SizedBox(height: 10),
+                                CustomButton(
+                                    text: 'Registrarse',
+                                    onPressed: () {
+                                      context.read<ProfileBloc>().add(
+                                          registerUser(
+                                              nameController.text,
+                                              emailController.text,
+                                              passwordController.text,
+                                              phoneController.text,
+                                              isChecked));
+                                      snackBarMessage(
+                                          ScaffoldMessenger.of(context), 'Usuario registrado.');
+                                    }),
+                                SizedBox(height: 15),
+                                CustomButton(
+                                    text: 'Iniciar sesion',
+                                    onPressed: () {
+                                      context.read<ProfileBloc>().add(
+                                          toggleRegister(isRegister: false));
+                                    }),
+                                Text(state.message,
+                                    style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20,
+                                        color: colorsPalete['white']))
+                              ]),
+                        );
+                      }
+
+                      return SingleChildScrollView(
+                        key: ValueKey(3),
+                        physics: BouncingScrollPhysics(),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CustomTextField(
+                                  controller: emailController,
+                                  labelText: 'Correo',
+                                  placeHolder: 'juan.g@gmail.com'),
+                              SizedBox(height: 10),
+                              CustomTextField(
+                                  controller: passwordController,
+                                  labelText: 'Contraseña',
+                                  placeHolder: '******',
+                                  isPassword: true),
+                              SizedBox(height: 10),
+                              CustomButton(
+                                  text: 'Iniciar sesion',
+                                  onPressed: () {
+                                    context.read<ProfileBloc>().add(loginUser(
+                                        emailController.text,
+                                        passwordController.text));
+                                  }),
+                              SizedBox(height: 15),
+                              CustomButton(
+                                  text: 'Registrarse',
+                                  onPressed: () {
+                                    context
+                                        .read<ProfileBloc>()
+                                        .add(toggleRegister(isRegister: true));
+                                  }),
+                              Text(state.message,
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20,
+                                      color: colorsPalete['white']))
                             ]),
-                            CustomButton(
-                                text: 'GUARDAR PERFIL',
-                                onPressed: () async {
-                                  final name = sanitizeName(nameController.text);
-                                  final email = sanitizeEmail(emailController.text);
-                                  final phone = sanitizePhone(phoneController.text);
-                                  await saveUser(name, email, phone);
-                                })
-                          ]),
-                        ],
-                      ))
-                ]);
-              } else {
-                return Column(children: [
-                  Expanded(child: Container()),
-                  Center(
-                      child: Text('Revisa tu conexion a internet.',
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 17,
-                              color: colorsPalete['white']))),
-                  Expanded(child: Container()),
-                  CustomButton(
-                      text: 'Intertar conectarse',
-                      onPressed: () {
-                        provider.checkConnection();
-                      }),
-                  SizedBox(height: 20)
-                ]);
-              }
-            }))
+                      );
+                    }))
           ]))
     ]);
   }

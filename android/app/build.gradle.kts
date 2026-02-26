@@ -29,9 +29,9 @@ android {
 
     defaultConfig {
         applicationId = "com.dnv.dev.crispychikis"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 6
+        versionCode = 7
         versionName = flutter.versionName
     }
 

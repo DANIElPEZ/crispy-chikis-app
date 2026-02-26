@@ -4,10 +4,12 @@ import 'package:crispychikis/components/text_field.dart';
 import 'package:crispychikis/components/horizontal_scroll_place_order_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:crispychikis/components/main_button.dart';
-import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/theme/color/colors.dart';
 import 'package:crispychikis/views/make_order_view/see_order.dart';
-import 'package:provider/provider.dart';
-import 'package:crispychikis/provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:crispychikis/blocs/make_order/make_order_bloc.dart';
+import 'package:crispychikis/blocs/make_order/make_order_event.dart';
+import 'package:crispychikis/blocs/make_order/make_order_state.dart';
 
 class PlaceOrder extends StatefulWidget {
   @override
@@ -16,40 +18,17 @@ class PlaceOrder extends StatefulWidget {
 
 class _PlaceOrderState extends State<PlaceOrder> {
   TextEditingController searchController = TextEditingController();
-  List<List<dynamic>> filteredGroupedProducts = [];
-  crispyProvider? provider;
 
   @override
   void initState() {
     super.initState();
-    provider = Provider.of<crispyProvider>(context, listen: false);
     searchController.addListener(filterProducts);
-    setState(()=>filteredGroupedProducts=provider!.clasifiedProducts);
+    context.read<MakeOrderBloc>().add(loadProducts());
   }
 
   void filterProducts() {
     String query = searchController.text.toLowerCase();
-
-    setState(() {
-      filteredGroupedProducts = provider!.clasifiedProducts
-          .map((category) {
-        String categoryName = category[0];
-        List<List<dynamic>> products = category[1];
-
-        List<List<dynamic>> filteredProducts = products
-            .where((product) => product[1].toLowerCase().contains(query))
-            .toList();
-
-        if (filteredProducts.isNotEmpty) {
-          return [categoryName, filteredProducts];
-        } else {
-          return null;
-        }
-      })
-          .where((category) => category != null)
-          .toList()
-          .cast<List<dynamic>>();
-    });
+    context.read<MakeOrderBloc>().add(searchProduct(query));
   }
 
   @override
@@ -82,43 +61,51 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               controller: searchController, labelText: '',
                           placeHolder: 'Buscar producto'),
                           SizedBox(height: 25),
-                          Text('Menu de productos (desliza)',
+                          Text('Menu del restaurante (desliza)',
                               style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 17,
                                   color: colorsPalete['white']))
                         ])),
-                Expanded(child: Consumer<crispyProvider>(
-                    builder: (context, provider, child) {
-                      provider.checkConnection();
-                      if(provider.isLoading){
+                Expanded(child: BlocBuilder<MakeOrderBloc, MakeOrderState>(
+                    builder: (context, state) {
+                      if (state.loading) {
                         return Center(
                             child: CircularProgressIndicator(
-                                strokeWidth: 6,
-                                color: colorsPalete['dark blue']
-                            )
-                        );
-                      } else if(provider.getConnection && provider.clasifiedProducts.isNotEmpty){
-                        final products=provider.clasifiedProducts;
+                                strokeWidth: 6, color: colorsPalete['dark blue']));
+                      }
+
+                      if (state.products.isEmpty) {
+                        return Column(children: [
+                          Expanded(child: Container()),
+                          Center(
+                              child: Text('Sin conexion a internet',
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 17,
+                                      color: colorsPalete['white']))),
+                          Expanded(child: Container()),
+                          Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 30),
+                              child: CustomButton(
+                                  text: 'Intertar nuevamente',
+                                  onPressed: () {
+                                    context.read<MakeOrderBloc>().add(loadProducts());
+                                  })),
+                          SizedBox(height: 20)
+                        ]);
+                      }
+
                         return Stack(
                           children: [
-                            filteredGroupedProducts.isEmpty?
                             ListView.builder(
                                 padding: EdgeInsets.only(bottom: 80),
                                 physics: BouncingScrollPhysics(),
-                                itemCount: products.length,
+                                itemCount: state.filteredProducts.length,
                                 itemBuilder: (context, index) {
                                   return HorizontalScrollPlaceOrder(
-                                      title: products[index][0],
-                                      elements: products[index][1]);
-                                }):ListView.builder(
-                                padding: EdgeInsets.only(bottom: 150),
-                                physics: BouncingScrollPhysics(),
-                                itemCount: filteredGroupedProducts.length,
-                                itemBuilder: (context, index) {
-                                  return HorizontalScrollPlaceOrder(
-                                      title: filteredGroupedProducts[index][0],
-                                      elements: filteredGroupedProducts[index][1]);
+                                      title: state.filteredProducts[index][0],
+                                      elements: state.filteredProducts[index][1]);
                                 }),
                             Positioned(
                                 bottom: 20,
@@ -154,46 +141,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     )))
                           ]
                         );
-                  }else{
-                        return Column(
-                          children: [
-                            Expanded(child: Container()),
-                            Center(
-                              child: Text('Revisa tu conexion a internet',
-                                  style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 17,
-                                      color: colorsPalete['white']))
-                            ),
-                            Expanded(child: Container()),
-                            Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                                child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FloatingActionButton.extended(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        backgroundColor: colorsPalete['dark brown'],
-                                        icon:
-                                        Icon(Icons.arrow_back, color: colorsPalete['pink']),
-                                        label: Text('Regresar',
-                                            style: GoogleFonts.nunito(
-                                                color: colorsPalete['pink'],
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.w700))),
-                                    SizedBox(height: 12),
-                                    CustomButton(
-                                        text: 'Intertar conectarse',
-                                        onPressed: () {
-                                          provider.checkConnection();
-                                        })
-                                  ]
-                                ))
-                          ]
-                        );
-                      }
                 }))
               ]))
         ]));

@@ -19,33 +19,31 @@ class DatabaseHelper {
             usuario_id INTEGER PRIMARY KEY,
             nombre TEXT,
             email TEXT,
-            telefono TEXT,
-            acepto INTEGER
+            telefono TEXT
           );
           ''');
     });
   }
 
-  Future<List> getUser() async {
+  Future<Map<String, dynamic>> getUser() async {
     final db = await database;
     final result = await db.query('user', limit: 1);
-    return result.isNotEmpty ? result : [];
+    return result.isNotEmpty ? result.first:{};
   }
 
   Future<void> insertORupdate(Map<String, dynamic> user) async {
     final db = await database;
-    final isExist =
-        await db.query('user', where: 'usuario_id=?', whereArgs: [user['usuario_id']]);
-    if (isExist.isEmpty) {
-      await db.insert('user', user,
-          conflictAlgorithm: ConflictAlgorithm.replace);
-    } else {
-      update(user);
+    final result =await getUser();
+    if (result.isNotEmpty) {
+      await db.update('user', user, where: 'email=?', whereArgs: [user['email']]);
+      return;
     }
+    await db.insert('user', user,
+          conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<void> update(Map<String, dynamic> user) async {
+  Future<void> deleteUser()async{
     final db = await database;
-    await db.update('user', user, where: 'usuario_id=?', whereArgs: [user['usuario_id']]);
+    await db.delete('user');
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:crispychikis/color/colors.dart';
+import 'package:crispychikis/theme/color/colors.dart';
 import 'package:crispychikis/components/appbar.dart';
 import 'package:crispychikis/components/main_button.dart';
 import 'package:google_fonts/google_fonts.dart';
