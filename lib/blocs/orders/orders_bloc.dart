@@ -55,6 +55,10 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
       });
       emit(state.copyWith(resume: resumen));
     });
+    on<makeCall>((event, emit)async{
+      final order = state.data.first;
+      await ordersRepository.makePhoneCall(order['phone_order']);
+    });
   }
 
   @override

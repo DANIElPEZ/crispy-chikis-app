@@ -20,7 +20,8 @@ class ConfirmOrderState extends State<ConfirmOrder> {
   TextEditingController directionController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
-  List<String> paymentMethods = ['Efectivo', 'Online'];
+  List<String> paymentMethods = ['Efectivo', //'Online'
+  ];
   String dropDownValue = 'Efectivo';
 
   @override

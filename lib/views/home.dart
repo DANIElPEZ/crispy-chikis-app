@@ -102,8 +102,8 @@ class MainViewState extends State<MainView> {
                   NavigationDestination(
                       icon: Icon(
                           indexView == 0
-                              ? Icons.room_service
-                              : Icons.room_service_outlined,
+                              ? Icons.restaurant
+                              : Icons.restaurant_outlined,
                           size: 34,
                           color: indexView == 0
                               ? colorsPalete['dark blue']
