@@ -1,7 +1,7 @@
 import 'package:crispychikis/theme/color/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:crispychikis/views/product.dart';
+import 'package:crispychikis/views/home/product.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:crispychikis/blocs/products/products_event.dart';
 import 'package:crispychikis/blocs/products/products_bloc.dart';

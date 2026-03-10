@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:crispychikis/blocs/profile/profile_bloc.dart';
 import 'package:crispychikis/blocs/profile/profile_state.dart';
 import 'package:crispychikis/blocs/profile/profile_event.dart';
-import 'package:crispychikis/views/policities.dart';
+import 'package:crispychikis/views/profile/policities.dart';
 import 'package:crispychikis/components/snack_bar_message.dart';
 
 class Profile extends StatefulWidget {

@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:crispychikis/repository/sqlite_helper.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -7,20 +8,28 @@ class MakeOrderRepository {
   final client = Supabase.instance.client;
   DatabaseHelper dbHelper = DatabaseHelper();
 
-  Future<void> MakeOrder(String direccion, String metodoPago,
-      String aditional_description, List products, double total) async {
+  Future<void> MakeOrder(
+      String direccion,
+      String metodoPago,
+      String aditional_description,
+      List products,
+      double total,
+      double latitude,
+      double longitude) async {
     final List productsId = [];
     for (int i = 0; i < products.length; i++) {
       productsId.add(products[i][0]);
     }
 
-    final user=await dbHelper.getUser();
+    final user = await dbHelper.getUser();
 
     final Map<String, dynamic> order = {
       'usuario_id': user['usuario_id'],
       'productos': productsId,
       'direccion': direccion,
       'precio_total': total,
+      'latitud_destino': latitude,
+      'longitud_destino': longitude,
       'fecha_creacion_pedido': DateTime.now().toString(),
       'estado': 1,
       'descripcion_adicional': aditional_description
@@ -35,21 +44,21 @@ class MakeOrderRepository {
   }
 
   Future<List> searchProduct(String query, List products) async {
-    final filterProducts= products
+    final filterProducts = products
         .map((category) {
-      String categoryName = category[0];
-      List<List<dynamic>> products = category[1];
+          String categoryName = category[0];
+          List<List<dynamic>> products = category[1];
 
-      List<List<dynamic>> filteredProducts = products
-          .where((product) => product[1].toLowerCase().contains(query))
-          .toList();
+          List<List<dynamic>> filteredProducts = products
+              .where((product) => product[1].toLowerCase().contains(query))
+              .toList();
 
-      if (filteredProducts.isNotEmpty) {
-        return [categoryName, filteredProducts];
-      } else {
-        return null;
-      }
-    })
+          if (filteredProducts.isNotEmpty) {
+            return [categoryName, filteredProducts];
+          } else {
+            return null;
+          }
+        })
         .where((category) => category != null)
         .toList()
         .cast<List<dynamic>>();
@@ -57,15 +66,13 @@ class MakeOrderRepository {
     return filterProducts;
   }
 
-  Future<List> fetchProducts()async{
+  Future<List> fetchProducts() async {
     final products = await client
         .from('productos')
         .select()
         .order('tipo_producto', ascending: true);
 
-    final typeProductResponse = await client
-        .from('tipo_producto')
-        .select();
+    final typeProductResponse = await client.from('tipo_producto').select();
 
     Map<String, List<List<dynamic>>> groupedProducts = {};
 
@@ -77,11 +84,11 @@ class MakeOrderRepository {
       for (var type in typeProductResponse) {
         if (type['tipo_producto_id'] == product['tipo_producto']) {
           groupedProducts[type['nombre']]?.add([
-            product['producto_id']??0,
-            product['nombre']??'',
-            product['descripcion']??'',
-            product['precio']??0,
-            product['imagen']??''
+            product['producto_id'] ?? 0,
+            product['nombre'] ?? '',
+            product['descripcion'] ?? '',
+            product['precio'] ?? 0,
+            product['imagen'] ?? ''
           ]);
         }
       }
@@ -92,11 +99,15 @@ class MakeOrderRepository {
     }).toList();
   }
 
-  Future<List> addProduct(int id, String title, double price, List products)async{
-    return [...products, [id, title, price]];
+  Future<List> addProduct(
+      int id, String title, double price, List products) async {
+    return [
+      ...products,
+      [id, title, price]
+    ];
   }
 
-  Future<List> deleteProduct(int id, List products)async{
+  Future<List> deleteProduct(int id, List products) async {
     for (int i = 0; i < products.length; i++) {
       if (products[i][0] == id) {
         products.removeAt(i);
@@ -108,8 +119,8 @@ class MakeOrderRepository {
 
   Future<List> calculateTotal(List products) async {
     double total = 0;
-    double iva=0;
-    double totalWithoutIva=0;
+    double iva = 0;
+    double totalWithoutIva = 0;
     for (int i = 0; i < products.length; i++) {
       total += products[i][2];
     }
@@ -121,9 +132,8 @@ class MakeOrderRepository {
 
   Future<bool> getCurrentTime() async {
     try {
-      final response = await http.get(Uri.parse(
-          'https://api-time-crispy-chikis.vercel.app/api/date'
-      ));
+      final response = await http
+          .get(Uri.parse('https://api-time-crispy-chikis.vercel.app/api/date'));
       if (response.statusCode != 200) return false;
 
       final data = json.decode(response.body);
@@ -133,8 +143,38 @@ class MakeOrderRepository {
       final hour = data['hour'];
 
       return (day != 'Monday') && (9 < hour && hour < 22);
-    }catch(e){
+    } catch (e) {
       return false;
     }
+  }
+
+  Future<String> getAddress(LatLng point) async {
+    try {
+      final url = Uri.parse(
+          'https://nominatim.openstreetmap.org/reverse?lat=${point.latitude}&lon=${point.longitude}&format=json&addressdetails=1');
+      final response = await http.get(url, headers: {
+        'User-Agent': 'com.dnv.dev.crispychikis',
+        'Accept-Language': 'es'
+      });
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final addr = data['address'];
+        final parts = <String>[];
+        if (addr['road'] != null) parts.add(addr['road']);
+        if (addr['house_number'] != null) parts.add(addr['house_number']);
+        if (addr['suburb'] != null) parts.add(addr['suburb']);
+        if (addr['city'] != null)
+          parts.add(addr['city']);
+        else if (addr['town'] != null)
+          parts.add(addr['town']);
+        else if (addr['village'] != null) parts.add(addr['village']);
+        return parts.isNotEmpty
+            ? parts.join(', ')
+            : data['display_name'] ?? 'Dirección no encontrada';
+      }
+    } catch (e) {
+      print(e);
+    }
+    return 'No se obtuvo la dirección';
   }
 }

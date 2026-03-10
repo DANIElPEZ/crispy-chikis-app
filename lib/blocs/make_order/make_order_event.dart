@@ -1,8 +1,9 @@
+import 'package:latlong2/latlong.dart';
+
 abstract class MakeOrderEvent{}
 
 class MakeOrder extends MakeOrderEvent{
-  MakeOrder({required this.direccion, required this.aditional_description, required this.metodoPago});
-  final String direccion;
+  MakeOrder({required this.aditional_description, required this.metodoPago});
   final String metodoPago;
   final String aditional_description;
 }
@@ -22,6 +23,11 @@ class DeleteProduct extends MakeOrderEvent{
 class searchProduct extends MakeOrderEvent{
   searchProduct(this.query);
   final String query;
+}
+
+class setDestination extends MakeOrderEvent{
+  setDestination({required this.point});
+  final LatLng point;
 }
 
 class CalculateTotal extends MakeOrderEvent{}

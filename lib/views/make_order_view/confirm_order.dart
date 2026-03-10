@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:crispychikis/components/appbar.dart';
 import 'package:crispychikis/views/home.dart';
+import 'package:crispychikis/views/make_order_view/destination.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:crispychikis/components/main_button.dart';
 import 'package:crispychikis/theme/color/colors.dart';
@@ -10,6 +11,7 @@ import 'package:crispychikis/blocs/make_order/make_order_bloc.dart';
 import 'package:crispychikis/blocs/make_order/make_order_event.dart';
 import 'package:crispychikis/blocs/make_order/make_order_state.dart';
 import 'package:crispychikis/components/snack_bar_message.dart';
+import 'package:crispychikis/components/icon_button.dart';
 
 class ConfirmOrder extends StatefulWidget {
   @override
@@ -17,10 +19,10 @@ class ConfirmOrder extends StatefulWidget {
 }
 
 class ConfirmOrderState extends State<ConfirmOrder> {
-  TextEditingController directionController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
-  List<String> paymentMethods = ['Efectivo', //'Online'
+  List<String> paymentMethods = [
+    'Efectivo', //'Online'
   ];
   String dropDownValue = 'Efectivo';
 
@@ -32,7 +34,6 @@ class ConfirmOrderState extends State<ConfirmOrder> {
 
   @override
   void dispose() {
-    directionController.dispose();
     descriptionController.dispose();
     super.dispose();
   }
@@ -48,19 +49,22 @@ class ConfirmOrderState extends State<ConfirmOrder> {
                 shape_color: colorsPalete['dark blue']!)),
         body: BlocListener<MakeOrderBloc, MakeOrderState>(
           listenWhen: (previous, current) =>
-              previous.isMaked != current.isMaked || previous.orderError != current.orderError,
-          listener: (context, state) async{
+              previous.isMaked != current.isMaked ||
+              previous.orderError != current.orderError,
+          listener: (context, state) async {
             if (state.isMaked) {
               final messenger = ScaffoldMessenger.of(context);
               snackBarMessage(messenger, 'Pedido realizado con exito');
               await Future.delayed(Duration(milliseconds: 1500));
-              if(!context.mounted) return;
+              if (!context.mounted) return;
               Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => MainView(indexView: 0)),
-                      (Route<dynamic> route) => false);
-            }else if (state.orderError == true){
-              snackBarMessage(ScaffoldMessenger.of(context), 'No se pudo realizar el pedido');
+                  MaterialPageRoute(
+                      builder: (context) => MainView(indexView: 0)),
+                  (Route<dynamic> route) => false);
+            } else if (state.orderError == true) {
+              snackBarMessage(ScaffoldMessenger.of(context),
+                  'No se pudo realizar el pedido');
             }
           },
           child: Stack(children: [
@@ -73,11 +77,26 @@ class ConfirmOrderState extends State<ConfirmOrder> {
                   horizontal: 30,
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomTextField(
-                        controller: directionController,
-                        labelText: 'Direccion',
-                        placeHolder: 'Calle 12 #12-34'),
+                    Text('Seleccionar destino',
+                        style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: colorsPalete['white'])),
+                    SizedBox(height: 5),
+                    SizedBox(
+                        height: 55,
+                        width: double.infinity,
+                        child: OrderButton(
+                            icon: Icons.location_on,
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          destinationView()));
+                            })),
                     SizedBox(height: 10),
                     CustomTextField(
                         controller: descriptionController,
@@ -92,6 +111,7 @@ class ConfirmOrderState extends State<ConfirmOrder> {
                     SizedBox(height: 5),
                     Container(
                         width: double.infinity,
+                        height: 55,
                         decoration: BoxDecoration(
                             color: colorsPalete['pink'],
                             borderRadius: BorderRadius.circular(8)),
@@ -118,10 +138,14 @@ class ConfirmOrderState extends State<ConfirmOrder> {
                                     setState(() => dropDownValue = value!)))),
                     SizedBox(height: 30),
                     dropDownValue == 'Efectivo'
-                        ? Container():Center(
-                      child: CustomButton(text: 'Pagar en linea', onPressed: (){
-                        snackBarMessage(ScaffoldMessenger.of(context), 'En desarrollo');
-                      }))
+                        ? Container()
+                        : Center(
+                            child: CustomButton(
+                                text: 'Pagar en linea',
+                                onPressed: () {
+                                  snackBarMessage(ScaffoldMessenger.of(context),
+                                      'En desarrollo');
+                                }))
                   ],
                 )),
             BlocBuilder<MakeOrderBloc, MakeOrderState>(
@@ -176,7 +200,6 @@ class ConfirmOrderState extends State<ConfirmOrder> {
                                 text: 'HACER PEDIDO',
                                 onPressed: () {
                                   context.read<MakeOrderBloc>().add(MakeOrder(
-                                      direccion: directionController.text,
                                       aditional_description:
                                           descriptionController.text,
                                       metodoPago: dropDownValue));

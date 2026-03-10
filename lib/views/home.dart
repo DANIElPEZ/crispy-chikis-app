@@ -1,9 +1,9 @@
-import 'package:crispychikis/views/menu.dart';
+import 'package:crispychikis/views/home/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:crispychikis/theme/color/colors.dart';
 import 'package:crispychikis/components/appbar.dart';
-import 'package:crispychikis/views/profile.dart';
-import 'package:crispychikis/views/orders.dart';
+import 'package:crispychikis/views/profile/profile.dart';
+import 'package:crispychikis/views/orders/orders.dart';
 import 'package:new_version_plus/new_version_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
 

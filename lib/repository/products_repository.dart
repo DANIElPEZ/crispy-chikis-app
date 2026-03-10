@@ -93,13 +93,15 @@ class ProductsRepository {
 
   Future<bool> getUser()async{
     final result=await dbHelper.getUser();
+    if(result.isEmpty) return false;
     final order=await client
         .from('ordenes')
         .select('estado')
         .eq('usuario_id', result['usuario_id'])
         .order('orden_id', ascending: false)
         .limit(1);
+    if(order.isEmpty) return true;
     final data=order.first;
-    return data['estado']==2?true:false;
+    return data['estado']==3?true:false;
   }
 }

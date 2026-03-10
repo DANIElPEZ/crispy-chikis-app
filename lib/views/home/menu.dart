@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:crispychikis/components/text_field.dart';
 import 'package:crispychikis/components/main_button.dart';
 import 'package:crispychikis/views/make_order_view/place_order.dart';
+import 'package:crispychikis/views/home/locations.dart';
 import 'package:crispychikis/components/horizontal_scroll_home_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -176,7 +177,7 @@ class MenuState extends State<Menu> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-                title: Text('Redes sociales',
+                title: Text('Redes',
                     style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w700,
                         fontSize: 22,
@@ -192,7 +193,25 @@ class MenuState extends State<Menu> {
                           'crispy chikis'),
                       SizedBox(height: 12),
                       visitButton(context, 'https://www.tiktok.com/@midudev',
-                          FontAwesomeIcons.tiktok, 'crispy.chikis')
+                          FontAwesomeIcons.tiktok, 'crispy.chikis'),
+                      SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: () async {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      locationView()));
+                        },
+                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Icon(Icons.location_on, color: colorsPalete['white'], size: 30),
+                          Text('Restaurantes',
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                  color: colorsPalete['white']))
+                        ]),
+                      )
                     ])),
                 backgroundColor: colorsPalete['dark brown'],
                 actions: [

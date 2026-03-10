@@ -12,50 +12,36 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
 
   OrdersBloc({required this.ordersRepository}) : super(OrdersState.initial()) {
     on<loadProducts>((event, emit) async {
+      emit(state.copyWith(loading: true));
       final products = await ordersRepository.fetchProducts();
       emit(state.copyWith(products: products));
+      add(createListProducts());
     });
+
     on<StreamGetLatestOrder>((event, emit) async {
-      await orderSubscription?.cancel();
       try {
         emit(state.copyWith(loading: true));
         final user = await dbHelper.getUser();
         final userId = user['usuario_id'] as int;
-        orderSubscription =
-            ordersRepository.getLatestOrder(userId).listen((data) {
-          add(OnOrderDataReceived(data));
-        }, onError: (error) {
-          emit(state.copyWith(loading: false));
+        await emit.forEach<List<Map<String, dynamic>>>(
+            ordersRepository.getLatestOrder(userId), onData: (data) {
+          return state.copyWith(data: data, loading: false);
+        }, onError: (error, stackTrace) {
+          return state.copyWith(loading: false);
         });
       } catch (e) {
-        emit(state.copyWith(loading: false));
+        if (!emit.isDone) emit(state.copyWith(loading: false));
       }
     });
-    on<OnOrderDataReceived>((event, emit) {
-      emit(state.copyWith(data: event.data, loading: false));
-      add(createListProducts());
+
+    on<createListProducts>((event, emit) async{
+      final user = await dbHelper.getUser();
+      final userId = user['usuario_id'] as int;
+      final resume=await ordersRepository.loadOrder(state.products, userId);
+      emit(state.copyWith(resume: resume, loading: false));
     });
-    on<createListProducts>((event, emit) {
-      if (state.data.isEmpty || state.products.isEmpty) return;
-      final idsOrder = state.data.first['productos'];
-      List<List<dynamic>> resumen = [];
-      Map<int, int> conteo = {};
 
-      for (var id in idsOrder) {
-        conteo[id] = (conteo[id] ?? 0) + 1;
-      }
-
-      conteo.forEach((id, cantidad) {
-        final producto = state.products.firstWhere(
-                (p) => p['producto_id'] == id, orElse: () => <String, dynamic>{});
-
-        if (producto != null) {
-          resumen.add([cantidad, producto['nombre'], producto['precio'] * cantidad]);
-        }
-      });
-      emit(state.copyWith(resume: resumen));
-    });
-    on<makeCall>((event, emit)async{
+    on<makeCall>((event, emit) async {
       final order = state.data.first;
       await ordersRepository.makePhoneCall(order['phone_order']);
     });
@@ -67,3 +53,5 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
     return super.close();
   }
 }
+
+//

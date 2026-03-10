@@ -12,10 +12,16 @@ class MakeOrderBloc extends Bloc<MakeOrderEvent, MakeOrderState> {
     on<MakeOrder>((event, emit) async {
       emit(state.copyWith(isMaked: false, orderError: false));
       try {
-        if (sanitizeDirection(event.direccion) &&
-            sanitizeDescription(event.aditional_description) &&
+        if (sanitizeDescription(event.aditional_description) &&
             (await makeOrderRepository.getCurrentTime())) {
-          await makeOrderRepository.MakeOrder(event.direccion, event.metodoPago, event.aditional_description, state.productsOrder, state.total);
+          await makeOrderRepository.MakeOrder(
+              state.address,
+              event.metodoPago,
+              event.aditional_description,
+              state.productsOrder,
+              state.total,
+              state.latitude,
+              state.longitude);
           emit(state.copyWith(
               isMaked: true,
               orderError: false,
@@ -36,12 +42,13 @@ class MakeOrderBloc extends Bloc<MakeOrderEvent, MakeOrderState> {
       emit(state.copyWith(productsOrder: newListProducts));
     });
     on<DeleteProduct>((event, emit) async {
-      final newListProducts =
-          await makeOrderRepository.deleteProduct(event.id, state.productsOrder);
+      final newListProducts = await makeOrderRepository.deleteProduct(
+          event.id, state.productsOrder);
       emit(state.copyWith(productsOrder: newListProducts));
     });
     on<CalculateTotal>((event, emit) async {
-      final values = await makeOrderRepository.calculateTotal(state.productsOrder);
+      final values =
+          await makeOrderRepository.calculateTotal(state.productsOrder);
       emit(state.copyWith(
           total: values[0], iva: values[1], totalWithoutIva: values[2]));
     });
@@ -55,6 +62,15 @@ class MakeOrderBloc extends Bloc<MakeOrderEvent, MakeOrderState> {
       final filterProducts =
           await makeOrderRepository.searchProduct(event.query, state.products);
       emit(state.copyWith(filteredProducts: filterProducts));
+    });
+    on<setDestination>((event, emit) async {
+      emit(state.copyWith(loading: true));
+      final address = await makeOrderRepository.getAddress(event.point);
+      emit(state.copyWith(
+          address: address,
+          latitude: event.point.latitude,
+          longitude: event.point.longitude,
+          loading: false));
     });
   }
 }

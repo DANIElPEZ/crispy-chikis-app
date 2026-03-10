@@ -1,0 +1,219 @@
+import 'package:flutter/material.dart';
+import 'package:crispychikis/theme/color/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:crispychikis/blocs/orders/orders_bloc.dart';
+import 'package:crispychikis/blocs/orders/orders_state.dart';
+import 'package:crispychikis/blocs/orders/orders_event.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:crispychikis/components/snack_bar_message.dart';
+import 'package:crispychikis/components/icon_button.dart';
+import 'package:crispychikis/views/orders/tracking.dart';
+
+class Orders extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => OrderState();
+}
+
+class OrderState extends State<Orders> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<OrdersBloc>().add(loadProducts());
+    context.read<OrdersBloc>().add(StreamGetLatestOrder());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(children: [
+      Column(children: [
+        Container(
+            color: colorsPalete['dark blue'],
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * 0.19),
+        Flexible(
+            child: Container(
+                color: colorsPalete['orange'],
+                width: MediaQuery.of(context).size.width)),
+      ]),
+      Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+          child:
+              BlocBuilder<OrdersBloc, OrdersState>(builder: (context, state) {
+            if (state.loading) {
+              return Center(
+                  child: CircularProgressIndicator(
+                      strokeWidth: 6, color: colorsPalete['dark blue']));
+            }
+
+
+            if (state.data.isNotEmpty) {
+              final order = state.data.first;
+              if(order['estado']!=3){
+                return Column(children: [
+                  SizedBox(height: 40),
+                  Text(
+                    order['fecha_creacion_pedido'].toString(),
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                          order['estado'] == 1
+                              ? Icons.access_time_filled
+                              : Icons.check,
+                          color: order['estado'] == 1
+                              ? colorsPalete['dark brown']
+                              : colorsPalete['light green'],
+                          size: 45),
+                      SizedBox(width: 15),
+                      Text(
+                        order['estado'] == 1 ? "Pendiente" : "Completado",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    ],
+                  ),
+                  Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 20),
+                            Text(
+                              "Destino: ${order['direccion']}",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            Row(children: [
+                              OrderButton(icon:Icons.phone,onPressed:(){
+                                if(order['phone_order']==null){
+                                  snackBarMessage(ScaffoldMessenger.of(context),
+                                      'No hay repartidor asignado');
+                                }
+                                context.read<OrdersBloc>().add(makeCall());
+                              }),
+                              SizedBox(width: 15),
+                              OrderButton(icon:Icons.location_on,onPressed:(){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            TrackingView(userId: order['usuario_id'])));
+                              }),
+                            ]),
+                            SizedBox(height: 25),
+                            Row(children: [
+                              Text('Cantidad',
+                                  style: GoogleFonts.nunito(
+                                      color: colorsPalete['white'],
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600)),
+                              SizedBox(width: 20),
+                              Text('Producto',
+                                  style: GoogleFonts.nunito(
+                                      color: colorsPalete['white'],
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600)),
+                              Expanded(child: Container()),
+                              Text('Precio',
+                                  style: GoogleFonts.nunito(
+                                      color: colorsPalete['white'],
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600)),
+                            ]),
+                            Container(height: 2, color: colorsPalete['white']),
+                            Expanded(
+                                child: ListView.builder(
+                                    itemCount: state.resume.length,
+                                    physics: BouncingScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                          margin: EdgeInsets.symmetric(vertical: 5),
+                                          child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                              children: [
+                                                SizedBox(width: 10),
+                                                Text(
+                                                    state.resume[index][0].toString(),
+                                                    style: GoogleFonts.nunito(
+                                                        color: colorsPalete['white'],
+                                                        fontSize: 20,
+                                                        fontWeight: FontWeight.w600)),
+                                                SizedBox(width: 25),
+                                                Container(
+                                                    constraints:
+                                                    BoxConstraints(maxWidth: 120),
+                                                    child: Text(
+                                                        state.resume[index][1]
+                                                            .toString(),
+                                                        softWrap: true,
+                                                        maxLines: 3,
+                                                        style: GoogleFonts.nunito(
+                                                            color:
+                                                            colorsPalete['white'],
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                            FontWeight.w600))),
+                                                Expanded(child: Container()),
+                                                Text(
+                                                    '\$ ${state.resume[index][2].toString()}',
+                                                    style: GoogleFonts.nunito(
+                                                        color: colorsPalete['white'],
+                                                        fontSize: 20,
+                                                        fontWeight: FontWeight.w600))
+                                              ]));
+                                    }))
+                          ])),
+                  SizedBox(height: 40)
+                ]);
+              }
+            }
+
+            return Center(
+              child: Text(
+                'No hay pedidos pendientes',
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    fontSize: 17),
+              ),
+            );
+          })),
+      Positioned(
+          right: 30,
+          bottom: 20,
+          child:
+              BlocBuilder<OrdersBloc, OrdersState>(builder: (context, state) {
+            if (state.data.isNotEmpty) {
+              final order = state.data.first;
+              if(order['estado']!=3){
+                return Text(
+                  'Total: \$ ${order['precio_total'].toString()}',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                );
+              }
+            }
+            return Container();
+          }))
+    ]);
+  }
+}

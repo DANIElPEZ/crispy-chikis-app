@@ -7,8 +7,3 @@ class loadProducts extends OrdersEvent{}
 class createListProducts extends OrdersEvent{}
 
 class makeCall extends OrdersEvent{}
-
-class OnOrderDataReceived extends OrdersEvent {
-  final List<Map<String, dynamic>> data;
-  OnOrderDataReceived(this.data);
-}
