@@ -27,8 +27,6 @@ Crispy Chikis is available now on **Google Play Store**.
 ## 📌 Project Status  
 ✅ Published with core features (online ordering, cash payment, GPS tracking).  
 🚧 In progress:  
-- 💳 Payment integration with [Wompi](https://wompi.co/)  
-- 🍴 Menu customization and promotions  
-- 🔔 Push notifications for order status updates  
+- 💳 Payment integration 
 
 ---
