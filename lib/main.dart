@@ -70,7 +70,7 @@ class Main extends StatelessWidget {
                         .copyWith(textScaler: TextScaler.noScaling),
                     child: SafeArea(child: child!));
               },
-              home: MainView(indexView: 0));
+              home: MainView(indexView: 1));
         }),
       ),
     );
