@@ -26,12 +26,19 @@ class SeeOrder extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
               child: Column(children: [
                 Row(children: [
-                  SizedBox(width: 30),
+                  SizedBox(width: 20),
+                  Text('Cantidad',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 17,
+                          color: colorsPalete['white'])),
+                  Expanded(child: Container()),
                   Text('Su pedido',
                       style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w700,
                           fontSize: 17,
-                          color: colorsPalete['white']))
+                          color: colorsPalete['white'])),
+                  Expanded(child: Container()),
                 ]),
                 Container(
                     width: MediaQuery.of(context).size.width,
@@ -40,15 +47,29 @@ class SeeOrder extends StatelessWidget {
                 Expanded(child: BlocBuilder<MakeOrderBloc, MakeOrderState>(
                     builder: (context, state) {
                   if (state.productsOrder.isNotEmpty) {
+                    Map<int, List<dynamic>> groupedProducts = {};
+
+                    for (var item in state.productsOrder) {
+                      int id = item[0];
+                      if (groupedProducts.containsKey(id)) {
+                        groupedProducts[id]![3] = groupedProducts[id]![3] + 1;
+                      } else {
+                        groupedProducts[id] = [item[0], item[1], item[2], 1];
+                      }
+                    }
+                    List productsToDisplay = groupedProducts.values.toList();
+
                     return Stack(children: [
                       ListView.builder(
                           padding: EdgeInsets.only(bottom: 150),
                           physics: BouncingScrollPhysics(),
-                          itemCount: state.productsOrder.length,
+                          itemCount: productsToDisplay.length,
                           itemBuilder: (context, index) {
+                            final product = productsToDisplay[index];
                             return CardSeeOrder(
-                                id: state.productsOrder[index][0],
-                                product: state.productsOrder[index][1]);
+                                id: product[0],
+                                quantity: product[3],
+                                product: product[1]);
                           }),
                       Positioned(
                           bottom: 20,

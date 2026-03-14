@@ -85,18 +85,12 @@ class ConfirmOrderState extends State<ConfirmOrder> {
                             fontWeight: FontWeight.w600,
                             color: colorsPalete['white'])),
                     SizedBox(height: 5),
-                    SizedBox(
-                        height: 55,
-                        width: double.infinity,
-                        child: OrderButton(
-                            icon: Icons.location_on,
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          destinationView()));
-                            })),
+                    Container(height: 55,
+                      width: double.infinity,
+                    child: OrderButton(
+                        icon: Icons.location_on,
+                        onPressed: ()=> Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => destinationView()))
+                    )),
                     SizedBox(height: 10),
                     CustomTextField(
                         controller: descriptionController,

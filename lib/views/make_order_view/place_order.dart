@@ -99,7 +99,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                         return Stack(
                           children: [
                             ListView.builder(
-                                padding: EdgeInsets.only(bottom: 80),
+                                padding: EdgeInsets.only(bottom: 150),
                                 physics: BouncingScrollPhysics(),
                                 itemCount: state.filteredProducts.length,
                                 itemBuilder: (context, index) {

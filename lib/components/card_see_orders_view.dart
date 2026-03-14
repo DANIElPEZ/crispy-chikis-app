@@ -4,21 +4,21 @@ import 'package:crispychikis/theme/color/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:crispychikis/blocs/make_order/make_order_bloc.dart';
 import 'package:crispychikis/blocs/make_order/make_order_event.dart';
-import 'package:crispychikis/blocs/make_order/make_order_state.dart';
 
 class CardSeeOrder extends StatefulWidget {
-  CardSeeOrder({required this.id, required this.product});
+  CardSeeOrder(
+      {required this.id, required this.product, required this.quantity});
 
   int id;
   String product;
+  int quantity;
 
   @override
   State<StatefulWidget> createState() => CardSeeOrderState();
 }
 
 class CardSeeOrderState extends State<CardSeeOrder> {
-
-  Future<void> deleteProduct(int id) async{
+  Future<void> deleteProduct(int id) async {
     context.read<MakeOrderBloc>().add(DeleteProduct(id: id));
   }
 
@@ -30,23 +30,33 @@ class CardSeeOrderState extends State<CardSeeOrder> {
         color: colorsPalete['dark blue'],
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 30),
-          height: 70,
-          child: Row(children: [
-            Text(widget.product,
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            height: 70,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+              Text(
+                "${widget.quantity}",
                 style: GoogleFonts.nunito(
-                    color: colorsPalete['white'],
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600)),
-            Expanded(child: Container()),
-            IconButton(
-                onPressed: () {
-                  deleteProduct(widget.id);
-                },
-                icon:
-                    Icon(Icons.delete_forever_outlined, color: colorsPalete['white'], size: 30))
-          ])
-        ));
+                  color: colorsPalete['white'],
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(width: 15),
+              Expanded(
+                child: Text(widget.product,
+                    style: GoogleFonts.nunito(
+                        color: colorsPalete['white'],
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600),
+                    overflow: TextOverflow.ellipsis),
+              ),
+              IconButton(
+                  onPressed: () => deleteProduct(widget.id),
+                  icon: Icon(Icons.delete_forever_outlined,
+                      color: colorsPalete['white'], size: 30))
+            ])));
   }
 }

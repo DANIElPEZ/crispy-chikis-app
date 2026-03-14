@@ -21,6 +21,10 @@ class _ProfileState extends State<Profile> {
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   bool isChecked = false;
+  List<String> countryCode = [
+    '+57 ', //'Online'
+  ];
+  String dropDownValue = '+57 ';
 
   @override
   void initState() {
@@ -147,7 +151,8 @@ class _ProfileState extends State<Profile> {
               if (state.name.isNotEmpty) {
                 nameController.text = state.name;
                 emailController.text = state.email;
-                phoneController.text = state.phone;
+                phoneController.text = state.phone.split(' ').last;
+                dropDownValue=state.phone.split(' ').first+' ';
               }
             }, builder: (context, state) {
               if (state.name.isNotEmpty &&
@@ -170,10 +175,51 @@ class _ProfileState extends State<Profile> {
                             labelText: 'Correo',
                             placeHolder: 'juan.g@gmail.com'),
                         SizedBox(height: 10),
-                        CustomTextField(
-                            controller: phoneController,
-                            labelText: 'Telefono',
-                            placeHolder: '+57 3112345678'),
+                        Text('Telefono',
+                            style: GoogleFonts.poppins(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: colorsPalete['white'])),
+                        SizedBox(height: 5),
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Container(
+                                width: 90,
+                                height: 63,
+                                decoration: BoxDecoration(
+                                    color: colorsPalete['pink'],
+                                    borderRadius: BorderRadius.circular(8)),
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        dropdownColor: colorsPalete['pink'],
+                                        value: dropDownValue,
+                                        icon: Icon(Icons.arrow_drop_down,
+                                            color: colorsPalete['dark brown']),
+                                        items: countryCode
+                                            .map<DropdownMenuItem<String>>(
+                                                (String value) => DropdownMenuItem(
+                                                value: value,
+                                                child: Text(value,
+                                                    style: GoogleFonts.nunito(
+                                                        fontSize: 21,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: colorsPalete[
+                                                        'dark brown']))))
+                                            .toList(),
+                                        onChanged: (String? value) =>
+                                            setState(() => dropDownValue = value!)))),
+                            SizedBox(width: 10),
+                            Expanded(
+                             child: CustomTextField(
+                                  controller: phoneController,
+                                  showText: false,
+                                  placeHolder: '3112345678'),
+                           ),
+                          ]
+                        ),
                         SizedBox(height: 10),
                         CustomButton(
                             text: 'Actualizar usuario',
@@ -181,7 +227,7 @@ class _ProfileState extends State<Profile> {
                               context.read<ProfileBloc>().add(updateUser(
                                   nameController.text,
                                   emailController.text,
-                                  phoneController.text));
+                                  dropDownValue+phoneController.text));
                               snackBarMessage(ScaffoldMessenger.of(context),
                                   'Usuario actualizado.');
                             }),
@@ -234,10 +280,51 @@ class _ProfileState extends State<Profile> {
                             labelText: 'Correo',
                             placeHolder: 'juan.g@gmail.com'),
                         SizedBox(height: 10),
-                        CustomTextField(
-                            controller: phoneController,
-                            labelText: 'Telefono',
-                            placeHolder: '+57 3112345678'),
+                        Text('Telefono',
+                            style: GoogleFonts.poppins(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: colorsPalete['white'])),
+                        SizedBox(height: 5),
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Container(
+                                  width: 90,
+                                  height: 63,
+                                  decoration: BoxDecoration(
+                                      color: colorsPalete['pink'],
+                                      borderRadius: BorderRadius.circular(8)),
+                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                          isExpanded: true,
+                                          dropdownColor: colorsPalete['pink'],
+                                          value: dropDownValue,
+                                          icon: Icon(Icons.arrow_drop_down,
+                                              color: colorsPalete['dark brown']),
+                                          items: countryCode
+                                              .map<DropdownMenuItem<String>>(
+                                                  (String value) => DropdownMenuItem(
+                                                  value: value,
+                                                  child: Text(value,
+                                                      style: GoogleFonts.nunito(
+                                                          fontSize: 21,
+                                                          fontWeight: FontWeight.w600,
+                                                          color: colorsPalete[
+                                                          'dark brown']))))
+                                              .toList(),
+                                          onChanged: (String? value) =>
+                                              setState(() => dropDownValue = value!)))),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: CustomTextField(
+                                    controller: phoneController,
+                                    showText: false,
+                                    placeHolder: '3112345678'),
+                              ),
+                            ]
+                        ),
                         SizedBox(height: 10),
                         CustomTextField(
                             controller: passwordController,
@@ -278,7 +365,7 @@ class _ProfileState extends State<Profile> {
                                   nameController.text,
                                   emailController.text,
                                   passwordController.text,
-                                  phoneController.text,
+                                  dropDownValue+phoneController.text,
                                   isChecked));
                               snackBarMessage(ScaffoldMessenger.of(context),
                                   'Usuario registrado.');

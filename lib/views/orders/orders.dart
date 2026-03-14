@@ -99,21 +99,25 @@ class OrderState extends State<Orders> {
                             ),
                             const SizedBox(height: 15),
                             Row(children: [
-                              OrderButton(icon:Icons.phone,onPressed:(){
-                                if(order['phone_order']==null){
-                                  snackBarMessage(ScaffoldMessenger.of(context),
-                                      'No hay repartidor asignado');
-                                }
-                                context.read<OrdersBloc>().add(makeCall());
-                              }),
+                              Expanded(
+                                child: OrderButton(icon:Icons.phone,onPressed:(){
+                                  if(order['phone_order']==null){
+                                    snackBarMessage(ScaffoldMessenger.of(context),
+                                        'No hay repartidor asignado');
+                                  }
+                                  context.read<OrdersBloc>().add(makeCall());
+                                }),
+                              ),
                               SizedBox(width: 15),
-                              OrderButton(icon:Icons.location_on,onPressed:(){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            TrackingView(userId: order['usuario_id'])));
-                              }),
+                              Expanded(
+                                child: OrderButton(icon:Icons.location_on,onPressed:(){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              TrackingView(userId: order['usuario_id'])));
+                                }),
+                              ),
                             ]),
                             SizedBox(height: 25),
                             Row(children: [
