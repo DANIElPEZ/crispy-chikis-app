@@ -11,8 +11,10 @@ class MakeOrderState {
       required this.products,
       required this.longitude,
       required this.latitude,
+      required this.username,
       required this.address});
 
+  final String username;
   final double total;
   final double iva;
   final double totalWithoutIva;
@@ -36,6 +38,7 @@ class MakeOrderState {
         total: 0,
         iva: 0,
         address: '',
+        username: '',
         latitude: 0,
         longitude: 0,
         isMaked: false,
@@ -49,6 +52,7 @@ class MakeOrderState {
       List? filteredProducts,
       bool? isMaked,
       String? address,
+      String? username,
       double? latitude,
       double? longitude,
       bool? loading,
@@ -56,6 +60,7 @@ class MakeOrderState {
       List? products,
       List? productsOrder}) {
     return MakeOrderState(
+        username: username ?? this.username,
         productsOrder: productsOrder ?? this.productsOrder,
         totalWithoutIva: totalWithoutIva ?? this.totalWithoutIva,
         total: total ?? this.total,

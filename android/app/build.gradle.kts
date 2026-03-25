@@ -31,7 +31,7 @@ android {
         applicationId = "com.dnv.dev.crispychikis"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 11
+        versionCode = 12
         versionName = flutter.versionName
     }
 

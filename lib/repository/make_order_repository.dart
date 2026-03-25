@@ -8,6 +8,10 @@ class MakeOrderRepository {
   final client = Supabase.instance.client;
   DatabaseHelper dbHelper = DatabaseHelper();
 
+  Future<Map<String, dynamic>> loadUser()async{
+    return await dbHelper.getUser();
+  }
+
   Future<void> MakeOrder(
       String direccion,
       String metodoPago,
@@ -21,7 +25,7 @@ class MakeOrderRepository {
       productsId.add(products[i][0]);
     }
 
-    final user = await dbHelper.getUser();
+    final user = await loadUser();
 
     final Map<String, dynamic> order = {
       'usuario_id': user['usuario_id'],

@@ -1,6 +1,6 @@
 name: crispychikis
 publish_to: 'none'
-version: 1.5.0
+version: 1.6.0
 environment:
   sdk: ^3.6.1
 dependencies:
@@ -21,6 +21,7 @@ dependencies:
   flutter:
     sdk: flutter
   bcrypt: ^1.2.0
+  webview_flutter: ^4.13.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

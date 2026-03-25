@@ -9,6 +9,7 @@ class MakeOrderBloc extends Bloc<MakeOrderEvent, MakeOrderState> {
 
   MakeOrderBloc({required this.makeOrderRepository})
       : super(MakeOrderState.initial()) {
+
     on<MakeOrder>((event, emit) async {
       emit(state.copyWith(isMaked: false, orderError: false));
       try {
@@ -49,8 +50,10 @@ class MakeOrderBloc extends Bloc<MakeOrderEvent, MakeOrderState> {
     on<CalculateTotal>((event, emit) async {
       final values =
           await makeOrderRepository.calculateTotal(state.productsOrder);
+      final user=await makeOrderRepository.loadUser();
+
       emit(state.copyWith(
-          total: values[0], iva: values[1], totalWithoutIva: values[2]));
+          total: values[0], iva: values[1], totalWithoutIva: values[2], username: user['nombre']));
     });
     on<loadProducts>((event, emit) async {
       emit(state.copyWith(loading: true));
