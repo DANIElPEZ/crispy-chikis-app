@@ -15,23 +15,25 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.dnv.dev.crispychikis"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = "28.1.13356709"
+    compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        }
     }
 
     defaultConfig {
         applicationId = "com.dnv.dev.crispychikis"
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = 13
+        targetSdk = 36
+        versionCode = 14
         versionName = flutter.versionName
     }
 
@@ -43,6 +45,13 @@ android {
             storePassword = keystoreProperties["storePassword"] as String
         }
     }
+
+    packaging {
+    	resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
 
     buildTypes {
         getByName("release") {
